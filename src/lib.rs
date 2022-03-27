@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use bevy::{
-    prelude::{debug, App, Color, Commands, Image, Plugin, Res, ResMut},
+    prelude::{debug, App, Color, Commands, Image, Plugin, Res, ResMut, info},
     tasks::{IoTaskPool, Task},
 };
 use crossbeam_channel::{bounded, Receiver, Sender};
@@ -114,7 +114,7 @@ fn listener(taskpool: Res<IoTaskPool>, mut commands: Commands) {
 
 fn receiver(mut streamdeck: ResMut<StreamDeck>, internal: Res<StreamDeckInternal>) {
     for from_stream in internal.events.try_iter() {
-        println!("-> {:?}", from_stream);
+        info!("-> {:?}", from_stream);
         match from_stream {
             StreamDeckEvent::LostConnection => streamdeck.kind = None,
             StreamDeckEvent::Connected(kind) => streamdeck.kind = Some(kind),

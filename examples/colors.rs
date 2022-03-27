@@ -1,10 +1,11 @@
-use bevy::{core::FixedTimestep, prelude::*};
+use bevy::{core::FixedTimestep, prelude::*, log::LogPlugin};
 use bevy_streamdeck::{StreamDeck, StreamDeckPlugin};
 use rand::Rng;
 
 fn main() {
     App::new()
         .add_plugins(MinimalPlugins)
+        .add_plugin(LogPlugin)
         .add_plugin(StreamDeckPlugin)
         .add_system_set(
             SystemSet::new()
