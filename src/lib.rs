@@ -1,7 +1,8 @@
 use std::time::Duration;
 
 use bevy::{
-    prelude::{debug, App, Color, Commands, Image, Plugin, Res, ResMut, info},
+    input::Input,
+    prelude::{debug, App, Color, Commands, CoreStage, EventWriter, Image, Plugin, Res, ResMut},
     tasks::{IoTaskPool, Task},
 };
 use crossbeam_channel::{bounded, Receiver, Sender};
@@ -12,8 +13,22 @@ pub struct StreamDeckPlugin;
 
 impl Plugin for StreamDeckPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(listener).add_system(receiver);
+        app.add_event::<StreamDeckInput>()
+            .init_resource::<Input<StreamDeckButton>>()
+            .add_startup_system(listener)
+            .add_system_to_stage(CoreStage::PreUpdate, receiver);
     }
+}
+
+#[derive(Clone, Copy, Hash, PartialEq, Eq)]
+pub struct StreamDeckButton(pub u8);
+
+#[derive(Debug)]
+pub enum StreamDeckInput {
+    Press(u8),
+    Release(u8),
+    Disconnected,
+    Connected(Kind),
 }
 
 #[derive(Debug)]
@@ -106,13 +121,39 @@ fn listener(taskpool: Res<IoTaskPool>, mut commands: Commands) {
     });
 }
 
-fn receiver(mut streamdeck: ResMut<StreamDeck>, internal: Res<StreamDeckInternal>) {
+fn receiver(
+    mut streamdeck: ResMut<StreamDeck>,
+    internal: Res<StreamDeckInternal>,
+    mut inputs: ResMut<Input<StreamDeckButton>>,
+    mut input_events: EventWriter<StreamDeckInput>,
+) {
+    inputs.clear();
     for from_stream in internal.events.try_iter() {
-        info!("-> {:?}", from_stream);
         match from_stream {
-            StreamDeckEvent::LostConnection => streamdeck.kind = None,
-            StreamDeckEvent::Connected(kind) => streamdeck.kind = Some(kind),
-            StreamDeckEvent::ButtonPressed(_) => (),
+            StreamDeckEvent::LostConnection => {
+                streamdeck.kind = None;
+                input_events.send(StreamDeckInput::Disconnected)
+            }
+            StreamDeckEvent::Connected(kind) => {
+                streamdeck.kind = Some(kind);
+                input_events.send(StreamDeckInput::Connected(kind))
+            }
+            StreamDeckEvent::ButtonPressed(buttons) => {
+                for (k, s) in buttons.iter().enumerate() {
+                    if *s == 1 {
+                        if !inputs.pressed(StreamDeckButton(k as u8)) {
+                            inputs.press(StreamDeckButton(k as u8));
+                            input_events.send(StreamDeckInput::Press(k as u8))
+                        }
+                    }
+                    if *s == 0 {
+                        if inputs.pressed(StreamDeckButton(k as u8)) {
+                            inputs.release(StreamDeckButton(k as u8));
+                            input_events.send(StreamDeckInput::Release(k as u8))
+                        }
+                    }
+                }
+            }
         }
     }
 }
