@@ -52,7 +52,7 @@ fn listener(taskpool: Res<IoTaskPool>, mut commands: Commands) {
                             StreamDeckOrder::Color(k, color) => {
                                 let [r, g, b, _] = color.as_rgba_f32();
                                 match streamdeck.set_button_rgb(
-                                    k,
+                                    k + 1,
                                     &Colour {
                                         r: (r * 255.0) as u8,
                                         g: (g * 255.0) as u8,
@@ -63,7 +63,9 @@ fn listener(taskpool: Res<IoTaskPool>, mut commands: Commands) {
                                     Err(Error::Hid(error)) => {
                                         debug!("HidError {:?}", error)
                                     }
-                                    Err(err) => return Err(err),
+                                    Err(err) => {
+                                        return Err(err);
+                                    }
                                 }
                             }
                         }
@@ -116,7 +118,7 @@ struct StreamDeckInternal {
 
 pub struct StreamDeck {
     orders: Sender<StreamDeckOrder>,
-    kind: Option<Kind>,
+    pub kind: Option<Kind>,
 }
 
 impl StreamDeck {

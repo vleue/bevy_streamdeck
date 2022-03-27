@@ -17,13 +17,15 @@ fn main() {
 fn change_color(streamdeck: Res<StreamDeck>) {
     let mut rng = rand::thread_rng();
 
-    let key = rng.gen_range(0..6);
-    let color = Color::rgb(rng.gen(), rng.gen(), rng.gen());
+    if let Some(kind) = streamdeck.kind {
+        let key = rng.gen_range(0..kind.keys());
+        let color = Color::rgb(rng.gen(), rng.gen(), rng.gen());
 
-    streamdeck.set_key_color(key + 1, color);
-    for i in 0..6 {
-        if i != key {
-            streamdeck.reset_key(i + 1);
+        streamdeck.set_key_color(key, color);
+        for i in 0..kind.keys() {
+            if i != key {
+                streamdeck.reset_key(i);
+            }
         }
     }
 }

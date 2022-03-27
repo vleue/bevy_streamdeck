@@ -12,3 +12,6 @@ crossbeam-channel = "0.5"
 
 [dev-dependencies]
 rand = "0.8"
+
+[patch.crates-io]
+streamdeck = { git = "https://github.com/mockersf/rust-streamdeck", branch = "mini-key-count" }
