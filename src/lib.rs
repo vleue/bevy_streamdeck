@@ -6,7 +6,7 @@ use bevy::{
 };
 use crossbeam_channel::{bounded, Receiver, Sender};
 use image::{imageops::FilterType, DynamicImage, ImageBuffer};
-use streamdeck::{Colour,  Error, Kind};
+use streamdeck::{Colour, Error, Kind};
 
 pub struct StreamDeckPlugin;
 
@@ -52,22 +52,20 @@ fn listener(taskpool: Res<IoTaskPool>, mut commands: Commands) {
 
                     for order in order_rx.try_iter() {
                         match match order {
-                            StreamDeckOrder::Reset => {
-                                streamdeck.reset()
-                            }
+                            StreamDeckOrder::Reset => streamdeck.reset(),
                             StreamDeckOrder::Color(k, color) => {
                                 let [r, g, b, _] = color.as_rgba_f32();
-                                 streamdeck.set_button_rgb(
+                                streamdeck.set_button_rgb(
                                     k + 1,
                                     &Colour {
                                         r: (r * 255.0) as u8,
                                         g: (g * 255.0) as u8,
                                         b: (b * 255.0) as u8,
                                     },
-                                ) 
+                                )
                             }
                             StreamDeckOrder::Image(k, image) => {
-                                 streamdeck.set_button_image(k + 1, image) 
+                                streamdeck.set_button_image(k + 1, image)
                             }
                         } {
                             Ok(_) => (),
