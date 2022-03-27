@@ -12,8 +12,8 @@ fn main() {
         .add_startup_system(load_asset)
         .add_system_set(
             SystemSet::new()
-                .with_run_criteria(FixedTimestep::step(0.5))
-                .with_system(change_color),
+                .with_run_criteria(FixedTimestep::step(1.0))
+                .with_system(change_image),
         )
         .run();
 }
@@ -21,10 +21,10 @@ fn main() {
 struct Logo(Handle<Image>);
 
 fn load_asset(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.insert_resource(Logo(asset_server.load("birdoggo-300.png")));
+    commands.insert_resource(Logo(asset_server.load("birdoggo.png")));
 }
 
-fn change_color(streamdeck: Res<StreamDeck>, logo: Res<Logo>, images: Res<Assets<Image>>) {
+fn change_image(streamdeck: Res<StreamDeck>, logo: Res<Logo>, images: Res<Assets<Image>>) {
     if let Some(image) = images.get(&logo.0) {
         let mut rng = rand::thread_rng();
 
