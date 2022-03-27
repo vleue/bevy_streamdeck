@@ -12,7 +12,7 @@ fn main() {
         .add_startup_system(clean)
         .add_system_set(
             SystemSet::new()
-                .with_run_criteria(FixedTimestep::step(0.5))
+                .with_run_criteria(FixedTimestep::step(0.35))
                 .with_system(spawn_mole),
         )
         .add_system_to_stage(CoreStage::PostUpdate, despawn_mole)
@@ -42,21 +42,42 @@ fn spawn_mole(
 
         let max_duration = 180.0;
         if rng.gen_bool(
-            (1.0 - (max_duration - time.seconds_since_startup()) / max_duration).clamp(0.2, 0.9),
+            (1.0 - (max_duration - time.seconds_since_startup()) / max_duration).clamp(0.2, 0.5),
         ) {
-            streamdeck.set_key_color(key, Color::RED);
-            commands.spawn_bundle((Mole {
-                button: key,
-                good: false,
-                timer: Timer::from_seconds(rng.gen_range(0.9..1.3), false),
-            },));
+            if rng.gen_bool(0.33) {
+                streamdeck.set_key_color(key, Color::RED);
+                commands.spawn_bundle((Mole {
+                    button: key,
+                    ty: MoleType::ExtraBad,
+                    timer: Timer::from_seconds(rng.gen_range(0.9..1.3), false),
+                },));
+            } else {
+                streamdeck.set_key_color(key, Color::ORANGE_RED);
+                commands.spawn_bundle((Mole {
+                    button: key,
+                    ty: MoleType::Bad,
+                    timer: Timer::from_seconds(rng.gen_range(0.9..1.3), false),
+                },));
+            }
         } else {
-            streamdeck.set_key_color(key, Color::GREEN);
-            commands.spawn_bundle((Mole {
-                button: key,
-                good: true,
-                timer: Timer::from_seconds(rng.gen_range(0.7..1.2), false),
-            },));
+            let reduction = (1.0 - (max_duration - time.seconds_since_startup()) / max_duration)
+                .clamp(0.0, 1.0)
+                / 2.0;
+            if rng.gen_bool(0.15) {
+                streamdeck.set_key_color(key, Color::BLUE);
+                commands.spawn_bundle((Mole {
+                    button: key,
+                    ty: MoleType::Extra,
+                    timer: Timer::from_seconds(rng.gen_range(0.5..1.0) - reduction as f32, false),
+                },));
+            } else {
+                streamdeck.set_key_color(key, Color::GREEN);
+                commands.spawn_bundle((Mole {
+                    button: key,
+                    ty: MoleType::Good,
+                    timer: Timer::from_seconds(rng.gen_range(0.7..1.2) - reduction as f32, false),
+                },));
+            }
         }
     }
 }
@@ -87,15 +108,30 @@ fn whack(
         if streamdeck_button.just_pressed(StreamDeckButton(mole.button)) {
             commands.entity(entity).despawn();
             streamdeck.reset_key(mole.button);
-            if mole.good {
-                player.score += 1;
-                info!("Current score: {}", player.score);
-            } else {
-                player.lives -= 1;
-                info!("Ouch!");
-                if player.lives == 0 {
-                    info!("You lost!");
-                    app_exit_events.send(AppExit);
+            match mole.ty {
+                MoleType::ExtraBad => {
+                    player.lives = player.lives.saturating_sub(2);
+                    info!("Mega ouch!");
+                    if player.lives == 0 {
+                        info!("You lost!");
+                        app_exit_events.send(AppExit);
+                    }
+                }
+                MoleType::Bad => {
+                    player.lives = player.lives.saturating_sub(1);
+                    info!("Ouch!");
+                    if player.lives == 0 {
+                        info!("You lost!");
+                        app_exit_events.send(AppExit);
+                    }
+                }
+                MoleType::Good => {
+                    player.score += 1;
+                    info!("Current score: {}", player.score);
+                }
+                MoleType::Extra => {
+                    player.score += 2;
+                    info!("Current score: {}", player.score);
                 }
             }
         }
@@ -105,8 +141,16 @@ fn whack(
 #[derive(Component, Debug)]
 struct Mole {
     button: u8,
-    good: bool,
+    ty: MoleType,
     timer: Timer,
+}
+
+#[derive(Debug)]
+enum MoleType {
+    ExtraBad,
+    Bad,
+    Good,
+    Extra,
 }
 
 struct Player {
