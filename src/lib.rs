@@ -2,7 +2,10 @@ use std::time::Duration;
 
 use bevy::{
     input::Input,
-    prelude::{debug, App, Color, Commands, CoreStage, EventWriter, Image, Plugin, Res, ResMut},
+    prelude::{
+        debug, App, Color, Commands, CoreStage, EventWriter, Image, Plugin, Res, ResMut,
+        StartupStage,
+    },
     tasks::{IoTaskPool, Task},
 };
 use crossbeam_channel::{bounded, Receiver, Sender};
@@ -15,7 +18,7 @@ impl Plugin for StreamDeckPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<StreamDeckInput>()
             .init_resource::<Input<StreamDeckButton>>()
-            .add_startup_system(listener)
+            .add_startup_system_to_stage(StartupStage::PreStartup, listener)
             .add_system_to_stage(CoreStage::PreUpdate, receiver);
     }
 }
