@@ -1,11 +1,12 @@
 use std::time::Duration;
 
 use bevy::{
-    prelude::{debug, App, Color, Commands, Plugin, Res, ResMut},
+    prelude::{debug, App, Color, Commands, Image, Plugin, Res, ResMut},
     tasks::{IoTaskPool, Task},
 };
 use crossbeam_channel::{bounded, Receiver, Sender};
-use streamdeck::{Colour, Error, Kind};
+use image::{imageops::FilterType, DynamicImage, ImageBuffer};
+use streamdeck::{Colour,  Error, Kind};
 
 pub struct StreamDeckPlugin;
 
@@ -24,6 +25,7 @@ enum StreamDeckEvent {
 
 enum StreamDeckOrder {
     Color(u8, Color),
+    Image(u8, DynamicImage),
 }
 
 fn listener(taskpool: Res<IoTaskPool>, mut commands: Commands) {
@@ -59,6 +61,17 @@ fn listener(taskpool: Res<IoTaskPool>, mut commands: Commands) {
                                         b: (b * 255.0) as u8,
                                     },
                                 ) {
+                                    Ok(_) => (),
+                                    Err(Error::Hid(error)) => {
+                                        debug!("HidError {:?}", error)
+                                    }
+                                    Err(err) => {
+                                        return Err(err);
+                                    }
+                                }
+                            }
+                            StreamDeckOrder::Image(k, image) => {
+                                match streamdeck.set_button_image(k + 1, image) {
                                     Ok(_) => (),
                                     Err(Error::Hid(error)) => {
                                         debug!("HidError {:?}", error)
@@ -124,6 +137,27 @@ pub struct StreamDeck {
 impl StreamDeck {
     pub fn set_key_color(&self, key: u8, color: Color) {
         let _ = self.orders.send(StreamDeckOrder::Color(key, color));
+    }
+
+    pub fn set_key_image(&self, key: u8, image: &Image) {
+        if let Some(kind) = self.kind {
+            let mut dynamic_image = match image.texture_descriptor.format {
+                bevy::render::render_resource::TextureFormat::Rgba8UnormSrgb => {
+                    ImageBuffer::from_raw(
+                        image.texture_descriptor.size.width,
+                        image.texture_descriptor.size.height,
+                        image.data.clone(),
+                    )
+                    .map(DynamicImage::ImageRgba8)
+                }
+                _ => unimplemented!(),
+            }
+            .unwrap();
+            let (x, y) = kind.image_size();
+            dynamic_image = dynamic_image.resize(x as u32, y as u32, FilterType::Gaussian);
+
+            let _ = self.orders.send(StreamDeckOrder::Image(key, dynamic_image));
+        }
     }
 
     pub fn reset_key(&self, key: u8) {
