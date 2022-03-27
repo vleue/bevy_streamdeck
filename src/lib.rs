@@ -140,17 +140,14 @@ fn receiver(
             }
             StreamDeckEvent::ButtonPressed(buttons) => {
                 for (k, s) in buttons.iter().enumerate() {
-                    if *s == 1 {
-                        if !inputs.pressed(StreamDeckButton(k as u8)) {
-                            inputs.press(StreamDeckButton(k as u8));
-                            input_events.send(StreamDeckInput::Press(k as u8))
-                        }
+                    if *s == 1 && !inputs.pressed(StreamDeckButton(k as u8)) {
+                        inputs.press(StreamDeckButton(k as u8));
+                        input_events.send(StreamDeckInput::Press(k as u8))
                     }
-                    if *s == 0 {
-                        if inputs.pressed(StreamDeckButton(k as u8)) {
-                            inputs.release(StreamDeckButton(k as u8));
-                            input_events.send(StreamDeckInput::Release(k as u8))
-                        }
+
+                    if *s == 0 && inputs.pressed(StreamDeckButton(k as u8)) {
+                        inputs.release(StreamDeckButton(k as u8));
+                        input_events.send(StreamDeckInput::Release(k as u8))
                     }
                 }
             }
