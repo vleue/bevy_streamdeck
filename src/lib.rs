@@ -24,6 +24,7 @@ enum StreamDeckEvent {
 }
 
 enum StreamDeckOrder {
+    Reset,
     Color(u8, Color),
     Image(u8, DynamicImage),
 }
@@ -50,36 +51,31 @@ fn listener(taskpool: Res<IoTaskPool>, mut commands: Commands) {
                     }
 
                     for order in order_rx.try_iter() {
-                        match order {
+                        match match order {
+                            StreamDeckOrder::Reset => {
+                                streamdeck.reset()
+                            }
                             StreamDeckOrder::Color(k, color) => {
                                 let [r, g, b, _] = color.as_rgba_f32();
-                                match streamdeck.set_button_rgb(
+                                 streamdeck.set_button_rgb(
                                     k + 1,
                                     &Colour {
                                         r: (r * 255.0) as u8,
                                         g: (g * 255.0) as u8,
                                         b: (b * 255.0) as u8,
                                     },
-                                ) {
-                                    Ok(_) => (),
-                                    Err(Error::Hid(error)) => {
-                                        debug!("HidError {:?}", error)
-                                    }
-                                    Err(err) => {
-                                        return Err(err);
-                                    }
-                                }
+                                ) 
                             }
                             StreamDeckOrder::Image(k, image) => {
-                                match streamdeck.set_button_image(k + 1, image) {
-                                    Ok(_) => (),
-                                    Err(Error::Hid(error)) => {
-                                        debug!("HidError {:?}", error)
-                                    }
-                                    Err(err) => {
-                                        return Err(err);
-                                    }
-                                }
+                                 streamdeck.set_button_image(k + 1, image) 
+                            }
+                        } {
+                            Ok(_) => (),
+                            Err(Error::Hid(error)) => {
+                                debug!("HidError {:?}", error)
+                            }
+                            Err(err) => {
+                                return Err(err);
                             }
                         }
                     }
@@ -162,5 +158,9 @@ impl StreamDeck {
 
     pub fn reset_key(&self, key: u8) {
         let _ = self.orders.send(StreamDeckOrder::Color(key, Color::BLACK));
+    }
+
+    pub fn reset(&self) {
+        let _ = self.orders.send(StreamDeckOrder::Reset);
     }
 }
