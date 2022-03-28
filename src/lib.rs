@@ -1,10 +1,11 @@
 use std::time::Duration;
 
 use bevy::{
+    app::AppExit,
     input::Input,
     prelude::{
-        debug, App, Color, Commands, CoreStage, EventWriter, Image, Plugin, Res, ResMut,
-        StartupStage,
+        debug, App, Color, Commands, CoreStage, EventReader, EventWriter, Image, Plugin, Res,
+        ResMut, StartupStage,
     },
     tasks::{IoTaskPool, Task},
 };
@@ -19,7 +20,8 @@ impl Plugin for StreamDeckPlugin {
         app.add_event::<StreamDeckInput>()
             .init_resource::<Input<StreamDeckButton>>()
             .add_startup_system_to_stage(StartupStage::PreStartup, listener)
-            .add_system_to_stage(CoreStage::PreUpdate, receiver);
+            .add_system_to_stage(CoreStage::PreUpdate, receiver)
+            .add_system_to_stage(CoreStage::Last, exit_on_exit);
     }
 }
 
@@ -45,6 +47,7 @@ enum StreamDeckOrder {
     Reset,
     Color(u8, Color),
     Image(u8, DynamicImage),
+    Exit,
 }
 
 fn listener(taskpool: Res<IoTaskPool>, mut commands: Commands) {
@@ -70,6 +73,7 @@ fn listener(taskpool: Res<IoTaskPool>, mut commands: Commands) {
 
                     for order in order_rx.try_iter() {
                         match match order {
+                            StreamDeckOrder::Exit => return Ok(false),
                             StreamDeckOrder::Reset => streamdeck.reset(),
                             StreamDeckOrder::Color(k, color) => {
                                 let [r, g, b, _] = color.as_rgba_f32();
@@ -95,12 +99,16 @@ fn listener(taskpool: Res<IoTaskPool>, mut commands: Commands) {
                             }
                         }
                     }
-                    Ok(())
+                    Ok(true)
                 };
-                if let Err(error) = act() {
-                    debug!("Error communicating with StreamDeck: {:?}", error);
-                    let _ = event_tx.send(StreamDeckEvent::LostConnection);
-                    lost_connection = true;
+                match act() {
+                    Ok(true) => (),
+                    Ok(false) => break,
+                    Err(error) => {
+                        debug!("Error communicating with StreamDeck: {:?}", error);
+                        let _ = event_tx.send(StreamDeckEvent::LostConnection);
+                        lost_connection = true;
+                    }
                 }
             }
             if lost_connection {
@@ -201,5 +209,12 @@ impl StreamDeck {
 
     pub fn reset(&self) {
         let _ = self.orders.send(StreamDeckOrder::Reset);
+    }
+}
+
+fn exit_on_exit(streamdeck: Res<StreamDeck>, mut exit_events: EventReader<AppExit>) {
+    if exit_events.iter().next().is_some() {
+        let _ = streamdeck.orders.send(StreamDeckOrder::Reset);
+        let _ = streamdeck.orders.send(StreamDeckOrder::Exit);
     }
 }
