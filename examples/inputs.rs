@@ -1,5 +1,5 @@
 use bevy::{log::LogPlugin, prelude::*};
-use bevy_streamdeck::{StreamDeckButton, StreamDeckInput, StreamDeckPlugin};
+use bevy_streamdeck::{StreamDeckInput, StreamDeckKey, StreamDeckPlugin};
 
 fn main() {
     App::new()
@@ -7,7 +7,7 @@ fn main() {
         .add_plugin(LogPlugin)
         .add_plugin(StreamDeckPlugin)
         .add_system(print_streamdeck_events)
-        .add_system(check_streamdeck_button_status)
+        .add_system(check_streamdeck_key_status)
         .run();
 }
 
@@ -17,13 +17,13 @@ fn print_streamdeck_events(mut streamdeck_input_events: EventReader<StreamDeckIn
     }
 }
 
-fn check_streamdeck_button_status(streamdeck_button: Res<Input<StreamDeckButton>>) {
+fn check_streamdeck_key_status(streamdeck_key: Res<Input<StreamDeckKey>>) {
     for i in 0..50 {
-        if streamdeck_button.just_pressed(StreamDeckButton(i)) {
-            info!("button {} just pressed", i);
+        if streamdeck_key.just_pressed(StreamDeckKey(i)) {
+            info!("key {} just pressed", i);
         }
-        if streamdeck_button.pressed(StreamDeckButton(i)) {
-            info!("button {} currently pressed", i);
+        if streamdeck_key.pressed(StreamDeckKey(i)) {
+            info!("key {} currently pressed", i);
         }
     }
 }

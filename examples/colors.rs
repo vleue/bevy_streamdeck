@@ -1,4 +1,4 @@
-use bevy::{core::FixedTimestep, prelude::*, log::LogPlugin};
+use bevy::{core::FixedTimestep, log::LogPlugin, prelude::*};
 use bevy_streamdeck::{StreamDeck, StreamDeckPlugin};
 use rand::Rng;
 

@@ -1,4 +1,7 @@
-use bevy::{asset::AssetPlugin, core::FixedTimestep, prelude::*, render::texture::ImagePlugin, log::LogPlugin};
+use bevy::{
+    asset::AssetPlugin, core::FixedTimestep, log::LogPlugin, prelude::*,
+    render::texture::ImagePlugin,
+};
 use bevy_streamdeck::{StreamDeck, StreamDeckPlugin};
 use rand::Rng;
 

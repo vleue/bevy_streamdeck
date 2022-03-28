@@ -1,7 +1,7 @@
 use std::iter;
 
 use bevy::{app::AppExit, core::FixedTimestep, log::LogPlugin, prelude::*};
-use bevy_streamdeck::{StreamDeck, StreamDeckButton, StreamDeckPlugin};
+use bevy_streamdeck::{StreamDeck, StreamDeckKey, StreamDeckPlugin};
 use rand::Rng;
 
 // Lower to make it harder
@@ -37,7 +37,7 @@ fn spawn_mole(
     let mut rng = rand::thread_rng();
 
     if let Some(kind) = streamdeck.kind {
-        let current = moles.iter().map(|m| m.button).collect::<Vec<_>>();
+        let current = moles.iter().map(|m| m.key).collect::<Vec<_>>();
         let key = iter::repeat(())
             .map(|_| rng.gen_range(0..kind.keys()))
             .find(|k| !current.contains(k))
@@ -50,14 +50,14 @@ fn spawn_mole(
             if rng.gen_bool(0.33) {
                 streamdeck.set_key_color(key, Color::RED);
                 commands.spawn_bundle((Mole {
-                    button: key,
+                    key,
                     ty: MoleType::ExtraBad,
                     timer: Timer::from_seconds(rng.gen_range(0.9..1.3) * FACTOR, false),
                 },));
             } else {
                 streamdeck.set_key_color(key, Color::ORANGE_RED);
                 commands.spawn_bundle((Mole {
-                    button: key,
+                    key,
                     ty: MoleType::Bad,
                     timer: Timer::from_seconds(rng.gen_range(0.9..1.3) * FACTOR, false),
                 },));
@@ -68,7 +68,7 @@ fn spawn_mole(
             if rng.gen_bool(0.15) {
                 streamdeck.set_key_color(key, Color::BLUE);
                 commands.spawn_bundle((Mole {
-                    button: key,
+                    key,
                     ty: MoleType::Extra,
                     timer: Timer::from_seconds(
                         (rng.gen_range(0.5..1.0) - reduction as f32).max(0.1) * FACTOR,
@@ -78,7 +78,7 @@ fn spawn_mole(
             } else {
                 streamdeck.set_key_color(key, Color::GREEN);
                 commands.spawn_bundle((Mole {
-                    button: key,
+                    key,
                     ty: MoleType::Good,
                     timer: Timer::from_seconds(
                         (rng.gen_range(0.7..1.2) - reduction as f32).max(0.1) * FACTOR,
@@ -99,7 +99,7 @@ fn despawn_mole(
     for (entity, mut mole) in moles.iter_mut() {
         if mole.timer.tick(time.delta()).just_finished() {
             commands.entity(entity).despawn();
-            streamdeck.reset_key(mole.button);
+            streamdeck.reset_key(mole.key);
         }
     }
 }
@@ -107,15 +107,15 @@ fn despawn_mole(
 fn whack(
     mut commands: Commands,
     moles: Query<(Entity, &Mole)>,
-    streamdeck_button: Res<Input<StreamDeckButton>>,
+    streamdeck_key: Res<Input<StreamDeckKey>>,
     streamdeck: Res<StreamDeck>,
     mut player: ResMut<Player>,
     mut app_exit_events: EventWriter<AppExit>,
 ) {
     for (entity, mole) in moles.iter() {
-        if streamdeck_button.just_pressed(StreamDeckButton(mole.button)) {
+        if streamdeck_key.just_pressed(StreamDeckKey(mole.key)) {
             commands.entity(entity).despawn();
-            streamdeck.reset_key(mole.button);
+            streamdeck.reset_key(mole.key);
             match mole.ty {
                 MoleType::ExtraBad => {
                     player.lives = player.lives.saturating_sub(2);
@@ -148,7 +148,7 @@ fn whack(
 
 #[derive(Component, Debug)]
 struct Mole {
-    button: u8,
+    key: u8,
     ty: MoleType,
     timer: Timer,
 }

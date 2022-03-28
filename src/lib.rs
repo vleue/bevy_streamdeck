@@ -11,14 +11,15 @@ use bevy::{
 };
 use crossbeam_channel::{bounded, Receiver, Sender};
 use image::{imageops::FilterType, DynamicImage, ImageBuffer};
-use streamdeck::{Colour, Error, Kind};
+pub use streamdeck::Kind;
+use streamdeck::{Colour, Error};
 
 pub struct StreamDeckPlugin;
 
 impl Plugin for StreamDeckPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<StreamDeckInput>()
-            .init_resource::<Input<StreamDeckButton>>()
+            .init_resource::<Input<StreamDeckKey>>()
             .add_startup_system_to_stage(StartupStage::PreStartup, listener)
             .add_system_to_stage(CoreStage::PreUpdate, receiver)
             .add_system_to_stage(CoreStage::Last, exit_on_exit);
@@ -26,7 +27,7 @@ impl Plugin for StreamDeckPlugin {
 }
 
 #[derive(Clone, Copy, Hash, PartialEq, Eq)]
-pub struct StreamDeckButton(pub u8);
+pub struct StreamDeckKey(pub u8);
 
 #[derive(Debug)]
 pub enum StreamDeckInput {
@@ -40,7 +41,7 @@ pub enum StreamDeckInput {
 enum StreamDeckEvent {
     LostConnection,
     Connected(streamdeck::Kind),
-    ButtonPressed(Vec<u8>),
+    KeyPressed(Vec<u8>),
 }
 
 enum StreamDeckOrder {
@@ -63,7 +64,7 @@ fn listener(taskpool: Res<IoTaskPool>, mut commands: Commands) {
                     let read = streamdeck.read_buttons(Some(Duration::from_millis(1)));
                     match read {
                         Ok(read) => {
-                            let _ = event_tx.send(StreamDeckEvent::ButtonPressed(read));
+                            let _ = event_tx.send(StreamDeckEvent::KeyPressed(read));
                         }
                         Err(Error::NoData) => {}
                         Err(err) => {
@@ -135,7 +136,7 @@ fn listener(taskpool: Res<IoTaskPool>, mut commands: Commands) {
 fn receiver(
     mut streamdeck: ResMut<StreamDeck>,
     internal: Res<StreamDeckInternal>,
-    mut inputs: ResMut<Input<StreamDeckButton>>,
+    mut inputs: ResMut<Input<StreamDeckKey>>,
     mut input_events: EventWriter<StreamDeckInput>,
 ) {
     inputs.clear();
@@ -149,15 +150,15 @@ fn receiver(
                 streamdeck.kind = Some(kind);
                 input_events.send(StreamDeckInput::Connected(kind))
             }
-            StreamDeckEvent::ButtonPressed(buttons) => {
-                for (k, s) in buttons.iter().enumerate() {
-                    if *s == 1 && !inputs.pressed(StreamDeckButton(k as u8)) {
-                        inputs.press(StreamDeckButton(k as u8));
+            StreamDeckEvent::KeyPressed(keys) => {
+                for (k, s) in keys.iter().enumerate() {
+                    if *s == 1 && !inputs.pressed(StreamDeckKey(k as u8)) {
+                        inputs.press(StreamDeckKey(k as u8));
                         input_events.send(StreamDeckInput::Press(k as u8))
                     }
 
-                    if *s == 0 && inputs.pressed(StreamDeckButton(k as u8)) {
-                        inputs.release(StreamDeckButton(k as u8));
+                    if *s == 0 && inputs.pressed(StreamDeckKey(k as u8)) {
+                        inputs.release(StreamDeckKey(k as u8));
                         input_events.send(StreamDeckInput::Release(k as u8))
                     }
                 }
