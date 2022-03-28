@@ -4,6 +4,9 @@ use bevy::{app::AppExit, core::FixedTimestep, log::LogPlugin, prelude::*};
 use bevy_streamdeck::{StreamDeck, StreamDeckButton, StreamDeckPlugin};
 use rand::Rng;
 
+// Lower to make it harder
+const FACTOR: f32 = 1.0;
+
 fn main() {
     App::new()
         .add_plugins(MinimalPlugins)
@@ -12,7 +15,7 @@ fn main() {
         .add_startup_system(clean)
         .add_system_set(
             SystemSet::new()
-                .with_run_criteria(FixedTimestep::step(0.35))
+                .with_run_criteria(FixedTimestep::step(0.35 * FACTOR as f64))
                 .with_system(spawn_mole),
         )
         .add_system_to_stage(CoreStage::PostUpdate, despawn_mole)
@@ -49,33 +52,38 @@ fn spawn_mole(
                 commands.spawn_bundle((Mole {
                     button: key,
                     ty: MoleType::ExtraBad,
-                    timer: Timer::from_seconds(rng.gen_range(0.9..1.3), false),
+                    timer: Timer::from_seconds(rng.gen_range(0.9..1.3) * FACTOR, false),
                 },));
             } else {
                 streamdeck.set_key_color(key, Color::ORANGE_RED);
                 commands.spawn_bundle((Mole {
                     button: key,
                     ty: MoleType::Bad,
-                    timer: Timer::from_seconds(rng.gen_range(0.9..1.3), false),
+                    timer: Timer::from_seconds(rng.gen_range(0.9..1.3) * FACTOR, false),
                 },));
             }
         } else {
-            let reduction = (1.0 - (max_duration - time.seconds_since_startup()) / max_duration)
-                .clamp(0.0, 1.0)
-                / 2.0;
+            let reduction =
+                (1.0 - (max_duration - time.seconds_since_startup()) / max_duration) / 2.0;
             if rng.gen_bool(0.15) {
                 streamdeck.set_key_color(key, Color::BLUE);
                 commands.spawn_bundle((Mole {
                     button: key,
                     ty: MoleType::Extra,
-                    timer: Timer::from_seconds(rng.gen_range(0.5..1.0) - reduction as f32, false),
+                    timer: Timer::from_seconds(
+                        (rng.gen_range(0.5..1.0) - reduction as f32).max(0.1) * FACTOR,
+                        false,
+                    ),
                 },));
             } else {
                 streamdeck.set_key_color(key, Color::GREEN);
                 commands.spawn_bundle((Mole {
                     button: key,
                     ty: MoleType::Good,
-                    timer: Timer::from_seconds(rng.gen_range(0.7..1.2) - reduction as f32, false),
+                    timer: Timer::from_seconds(
+                        (rng.gen_range(0.7..1.2) - reduction as f32).max(0.1) * FACTOR,
+                        false,
+                    ),
                 },));
             }
         }
