@@ -16,3 +16,7 @@ rand = "0.8"
 
 [patch.crates-io]
 streamdeck = { git = "https://github.com/mockersf/rust-streamdeck", branch = "mini-key-count" }
+[[example]]
+name = "image"
+required-features = [ "bevy/png" ]
+
