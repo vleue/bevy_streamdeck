@@ -112,7 +112,7 @@ jobs:
       - name: Install Dependencies
         if: runner.os == 'linux'
         run: sudo apt-get update; sudo apt-get install pkg-config libx11-dev libasound2-dev libudev-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libusb-1.0-0-dev libhidapi-dev
-      - name: Run cargo fmt
+      - name: Run cargo doc
         uses: actions-rs/cargo@v1
         with:
           command: doc
