@@ -9,6 +9,12 @@
 
 [Elgato Stream Deck](https://www.elgato.com/en/stream-deck) plugin for Bevy.
 
+## Linux Setup
+
+see https://github.com/ryankurte/rust-streamdeck#getting-started
+
+## Bevy Compatibility
+
 |Bevy|bevy_easings|
 |---|---|
 |0.6|0.1|
