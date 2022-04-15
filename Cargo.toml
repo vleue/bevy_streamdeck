@@ -11,16 +11,28 @@ keywords = ["bevy", "streamdeck"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
 
+[features]
+default = [ "color_compatibility", "image_compatibility" ]
+color_compatibility = [ "bevy_render" ]
+image_compatibility = [ "bevy_render", "images" ]
+images = [ "image" ]
+
 [dependencies]
-bevy = { version = "0.6", default-features = false, features = [ "bevy_render" ] }
+bevy_ecs = { version = "0.6" }
+bevy_app = { version = "0.6" }
+bevy_input = { version = "0.6" }
+bevy_log = { version = "0.6" }
+bevy_tasks = { version = "0.6" }
 streamdeck = { version = "0.6", default-features = false }
 crossbeam-channel = "0.5"
-image = "0.23"
+bevy_render = { version = "0.6", optional = true }
+image = { version = "0.23", optional = true }
 
 [dev-dependencies]
 rand = "0.8"
+bevy_core = { version = "0.6" }
+bevy = { version = "0.6" }
 
 [[example]]
 name = "image"
-required-features = [ "bevy/png" ]
 

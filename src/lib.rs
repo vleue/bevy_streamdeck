@@ -1,16 +1,17 @@
 use std::time::Duration;
 
-use bevy::{
-    app::AppExit,
-    input::Input,
-    prelude::{
-        debug, App, Color, Commands, CoreStage, EventReader, EventWriter, Image, Plugin, Res,
-        ResMut, StartupStage,
-    },
-    tasks::{IoTaskPool, Task},
-};
+use bevy_app::{App, AppExit, CoreStage, EventReader, EventWriter, Plugin, StartupStage};
+use bevy_ecs::system::{Commands, Res, ResMut};
+use bevy_input::Input;
+use bevy_log::debug;
+#[cfg(feature = "color_compatibility")]
+pub use bevy_render::prelude::Color;
+#[cfg(feature = "images")]
+use bevy_render::prelude::Image;
+use bevy_tasks::{IoTaskPool, Task};
 use crossbeam_channel::{bounded, Receiver, Sender};
-use image::{imageops::FilterType, DynamicImage, ImageBuffer};
+#[cfg(feature = "images")]
+use image::{imageops::FilterType, DynamicImage, ImageBuffer, Pixel, Rgba};
 pub use streamdeck::Kind;
 use streamdeck::{Colour, Error};
 
@@ -44,9 +45,34 @@ enum StreamDeckEvent {
     KeyPressed(Vec<u8>),
 }
 
+#[cfg(not(feature = "color_compatibility"))]
+#[derive(Default)]
+pub struct Color {
+    pub r: f32,
+    pub g: f32,
+    pub b: f32,
+}
+#[cfg(not(feature = "color_compatibility"))]
+impl Color {
+    const BLACK: Color = Color {
+        r: 0.0,
+        g: 0.0,
+        b: 0.0,
+    };
+
+    pub const fn rgb(r: f32, g: f32, b: f32) -> Color {
+        Color { r, g, b }
+    }
+
+    fn as_rgba_f32(&self) -> [f32; 4] {
+        [self.r, self.g, self.b, 1.0]
+    }
+}
+
 enum StreamDeckOrder {
     Reset,
     Color(u8, Color),
+    #[cfg(feature = "images")]
     Image(u8, DynamicImage),
     Exit,
 }
@@ -87,6 +113,7 @@ fn listener(taskpool: Res<IoTaskPool>, mut commands: Commands) {
                                     },
                                 )
                             }
+                            #[cfg(feature = "images")]
                             StreamDeckOrder::Image(k, image) => {
                                 streamdeck.set_button_image(k + 1, image)
                             }
@@ -183,10 +210,11 @@ impl StreamDeck {
         let _ = self.orders.send(StreamDeckOrder::Color(key, color));
     }
 
+    #[cfg(feature = "images")]
     pub fn set_key_image(&self, key: u8, image: &Image) {
         if let Some(kind) = self.kind {
             let mut dynamic_image = match image.texture_descriptor.format {
-                bevy::render::render_resource::TextureFormat::Rgba8UnormSrgb => {
+                bevy_render::render_resource::TextureFormat::Rgba8UnormSrgb => {
                     ImageBuffer::from_raw(
                         image.texture_descriptor.size.width,
                         image.texture_descriptor.size.height,
