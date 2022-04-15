@@ -15,6 +15,6 @@ see https://github.com/ryankurte/rust-streamdeck#getting-started
 
 ## Bevy Compatibility
 
-|Bevy|bevy_easings|
+|Bevy|bevy_streamdeck|
 |---|---|
 |0.6|0.1|
