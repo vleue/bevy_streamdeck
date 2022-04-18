@@ -25,7 +25,7 @@ bevy_log = { version = "0.6" }
 bevy_tasks = { version = "0.6" }
 streamdeck = { version = "0.6", default-features = false }
 crossbeam-channel = "0.5"
-bevy_render = { version = "0.6", optional = true }
+bevy_render = { version = "0.7", optional = true }
 image = { version = "0.23", optional = true }
 
 [dev-dependencies]
