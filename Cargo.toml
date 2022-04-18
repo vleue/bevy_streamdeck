@@ -18,7 +18,7 @@ image_compatibility = [ "bevy_render", "images" ]
 images = [ "image" ]
 
 [dependencies]
-bevy_ecs = { version = "0.6" }
+bevy_ecs = { version = "0.7" }
 bevy_app = { version = "0.6" }
 bevy_input = { version = "0.6" }
 bevy_log = { version = "0.6" }
