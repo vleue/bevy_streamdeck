@@ -21,7 +21,7 @@ images = [ "image" ]
 bevy_ecs = { version = "0.6" }
 bevy_app = { version = "0.6" }
 bevy_input = { version = "0.6" }
-bevy_log = { version = "0.6" }
+bevy_log = { version = "0.7" }
 bevy_tasks = { version = "0.6" }
 streamdeck = { version = "0.6", default-features = false }
 crossbeam-channel = "0.5"
