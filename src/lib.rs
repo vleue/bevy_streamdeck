@@ -202,17 +202,27 @@ struct StreamDeckInternal {
 
 pub struct StreamDeck {
     orders: Sender<StreamDeckOrder>,
-    pub kind: Option<Kind>,
+    kind: Option<Kind>,
 }
 
 impl StreamDeck {
+    pub fn kind(&self) -> Option<Kind> {
+        self.kind
+    }
+
     pub fn set_key_color(&self, key: u8, color: Color) {
         let _ = self.orders.send(StreamDeckOrder::Color(key, color));
     }
 
     #[cfg(feature = "images")]
     pub fn set_key_image(&self, key: u8, image: &Image) {
+        self.set_key_image_with_mode(key, image, ImageMode::default())
+    }
+
+    #[cfg(feature = "images")]
+    pub fn set_key_image_with_mode(&self, key: u8, image: &Image, image_mode: ImageMode) {
         if let Some(kind) = self.kind {
+            // Convert the texture to an image
             let mut dynamic_image = match image.texture_descriptor.format {
                 bevy_render::render_resource::TextureFormat::Rgba8UnormSrgb => {
                     ImageBuffer::from_raw(
@@ -225,8 +235,42 @@ impl StreamDeck {
                 _ => unimplemented!(),
             }
             .unwrap();
+
+            // Resize the image to the size supported by the Stream Deck
             let (x, y) = kind.image_size();
-            dynamic_image = dynamic_image.resize(x as u32, y as u32, FilterType::Gaussian);
+            dynamic_image = match image_mode.resize {
+                ImageResize::Exact => {
+                    dynamic_image.resize_exact(x as u32, y as u32, FilterType::Gaussian)
+                }
+                ImageResize::Aspect => {
+                    dynamic_image.resize(x as u32, y as u32, FilterType::Gaussian)
+                }
+                ImageResize::AspectFill => {
+                    dynamic_image.resize_to_fill(x as u32, y as u32, FilterType::Gaussian)
+                }
+            };
+
+            // Apply a background
+            if let Some(background) = image_mode.background {
+                if let Color::Rgba {
+                    red, green, blue, ..
+                } = background.as_rgba()
+                {
+                    for pixel in dynamic_image.as_mut_rgba8().unwrap().pixels_mut() {
+                        pixel.blend(&Rgba([
+                            (red * 255.0) as u8,
+                            (green * 255.0) as u8,
+                            (blue * 255.0) as u8,
+                            255 - pixel.0[3],
+                        ]));
+                    }
+                }
+            }
+
+            // Invert
+            if image_mode.invert {
+                dynamic_image.invert();
+            }
 
             let _ = self.orders.send(StreamDeckOrder::Image(key, dynamic_image));
         }
@@ -246,4 +290,32 @@ fn exit_on_exit(streamdeck: Res<StreamDeck>, mut exit_events: EventReader<AppExi
         let _ = streamdeck.orders.send(StreamDeckOrder::Reset);
         let _ = streamdeck.orders.send(StreamDeckOrder::Exit);
     }
+}
+
+#[cfg(feature = "images")]
+pub enum ImageResize {
+    /// Does not preserve aspect ratio.
+    Exact,
+    /// The image's aspect ratio is preserved.
+    Aspect,
+    /// The image's aspect ratio is preserved.
+    /// The image is scaled to the maximum possible size that fits within the
+    /// larger (relative to aspect ratio) of the bounds, then cropped to fit
+    /// within the other bound.
+    AspectFill,
+}
+
+#[cfg(feature = "images")]
+impl Default for ImageResize {
+    fn default() -> Self {
+        Self::Exact
+    }
+}
+
+#[cfg(feature = "images")]
+#[derive(Default)]
+pub struct ImageMode {
+    pub resize: ImageResize,
+    pub invert: bool,
+    pub background: Option<Color>,
 }

@@ -1,7 +1,17 @@
 use std::iter;
 
-use bevy::{app::AppExit, core::FixedTimestep, log::LogPlugin, prelude::*};
-use bevy_streamdeck::{StreamDeck, StreamDeckKey, StreamDeckPlugin};
+// This example use direct dependencies to avoid adding some parts of Bevy like bevy_assets
+use bevy_app::{App, AppExit, CoreStage, EventWriter, ScheduleRunnerPlugin};
+use bevy_core::{CorePlugin, FixedTimestep, Time, Timer};
+use bevy_ecs::{
+    entity::Entity,
+    prelude::Component,
+    schedule::SystemSet,
+    system::{Commands, Query, Res, ResMut},
+};
+use bevy_input::Input;
+use bevy_log::{info, LogPlugin};
+use bevy_streamdeck::{Color, StreamDeck, StreamDeckKey, StreamDeckPlugin};
 use rand::Rng;
 
 // Lower to make it harder
@@ -9,7 +19,8 @@ const FACTOR: f32 = 1.0;
 
 fn main() {
     App::new()
-        .add_plugins(MinimalPlugins)
+        .add_plugin(CorePlugin)
+        .add_plugin(ScheduleRunnerPlugin)
         .add_plugin(LogPlugin)
         .add_plugin(StreamDeckPlugin)
         .add_startup_system(clean)
@@ -36,7 +47,7 @@ fn spawn_mole(
 ) {
     let mut rng = rand::thread_rng();
 
-    if let Some(kind) = streamdeck.kind {
+    if let Some(kind) = streamdeck.kind() {
         let current = moles.iter().map(|m| m.key).collect::<Vec<_>>();
         let key = iter::repeat(())
             .map(|_| rng.gen_range(0..kind.keys()))
@@ -48,14 +59,14 @@ fn spawn_mole(
             (1.0 - (max_duration - time.seconds_since_startup()) / max_duration).clamp(0.2, 0.5),
         ) {
             if rng.gen_bool(0.33) {
-                streamdeck.set_key_color(key, Color::RED);
+                streamdeck.set_key_color(key, Color::rgb(1.0, 0.0, 0.0));
                 commands.spawn_bundle((Mole {
                     key,
                     ty: MoleType::ExtraBad,
                     timer: Timer::from_seconds(rng.gen_range(0.9..1.3) * FACTOR, false),
                 },));
             } else {
-                streamdeck.set_key_color(key, Color::ORANGE_RED);
+                streamdeck.set_key_color(key, Color::rgb(1.0, 0.25, 0.0));
                 commands.spawn_bundle((Mole {
                     key,
                     ty: MoleType::Bad,
@@ -66,7 +77,7 @@ fn spawn_mole(
             let reduction =
                 (1.0 - (max_duration - time.seconds_since_startup()) / max_duration) / 2.0;
             if rng.gen_bool(0.15) {
-                streamdeck.set_key_color(key, Color::BLUE);
+                streamdeck.set_key_color(key, Color::rgb(0.0, 0.0, 1.0));
                 commands.spawn_bundle((Mole {
                     key,
                     ty: MoleType::Extra,
@@ -76,7 +87,7 @@ fn spawn_mole(
                     ),
                 },));
             } else {
-                streamdeck.set_key_color(key, Color::GREEN);
+                streamdeck.set_key_color(key, Color::rgb(0.0, 1.0, 0.0));
                 commands.spawn_bundle((Mole {
                     key,
                     ty: MoleType::Good,

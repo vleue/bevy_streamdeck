@@ -18,7 +18,7 @@ fn main() {
 fn change_color(streamdeck: Res<StreamDeck>) {
     let mut rng = rand::thread_rng();
 
-    if let Some(kind) = streamdeck.kind {
+    if let Some(kind) = streamdeck.kind() {
         let key = rng.gen_range(0..kind.keys());
         let color = Color::rgb(rng.gen(), rng.gen(), rng.gen());
 

@@ -31,7 +31,7 @@ fn change_image(streamdeck: Res<StreamDeck>, logo: Res<Logo>, images: Res<Assets
     if let Some(image) = images.get(&logo.0) {
         let mut rng = rand::thread_rng();
 
-        if let Some(kind) = streamdeck.kind {
+        if let Some(kind) = streamdeck.kind() {
             let key = rng.gen_range(0..kind.keys());
 
             streamdeck.set_key_image(key, &image);

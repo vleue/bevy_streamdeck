@@ -19,6 +19,7 @@ fn print_streamdeck_events(mut streamdeck_input_events: EventReader<StreamDeckIn
 
 fn check_streamdeck_key_status(streamdeck_key: Res<Input<StreamDeckKey>>) {
     for i in 0..50 {
+        // TODO: check with the number of keys on the deck
         if streamdeck_key.just_pressed(StreamDeckKey(i)) {
             info!("key {} just pressed", i);
         }
