@@ -13,32 +13,30 @@ readme = "README.md"
 
 [features]
 default = [ "color_compatibility", "image_compatibility" ]
-color_compatibility = [ "bevy_render" ]
-image_compatibility = [ "bevy_render", "images" ]
+color_compatibility = [ "bevy/bevy_render" ]
+image_compatibility = [ "bevy/bevy_render", "images" ]
 images = [ "image" ]
+assets = [ "bevy/bevy_asset" ]
 
 [dependencies]
-
-bevy_ecs = { version = "0.6" }
-bevy_app = { version = "0.6" }
-bevy_input = { version = "0.6" }
-bevy_log = { version = "0.6" }
-bevy_tasks = { version = "0.6" }
+bevy = { version = "0.8.0-dev", git = "https://github.com/bevyengine/bevy", default-features = false }
 streamdeck = { version = "0.6", default-features = false }
 crossbeam-channel = "0.5"
-bevy_render = { version = "0.6", optional = true }
 image = { version = "0.23", optional = true }
 
 [dev-dependencies]
 rand = "0.8"
-bevy_core = { version = "0.6" }
-bevy = { version = "0.6" }
+reqwest = {version = "0.11", features = ["blocking", "json"] }
+serde = { version = "1.0", features = ["derive"] }
 
 [[example]]
 name = "image"
+required-features = ["assets"]
 
 [[example]]
 name = "animated"
+required-features = ["assets"]
 
 [[example]]
 name = "demo"
+required-features = ["assets"]

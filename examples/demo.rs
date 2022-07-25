@@ -1,6 +1,6 @@
 use bevy::{
-    app::AppExit, asset::AssetPlugin, core::FixedTimestep, log::LogPlugin, prelude::*,
-    render::texture::ImagePlugin,
+    app::AppExit, asset::AssetPlugin, log::LogPlugin, prelude::*, render::texture::ImagePlugin,
+    time::FixedTimestep,
 };
 use bevy_streamdeck::{ImageMode, StreamDeck, StreamDeckPlugin};
 use rand::Rng;

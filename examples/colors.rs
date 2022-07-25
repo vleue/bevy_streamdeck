@@ -1,5 +1,5 @@
-use bevy::{core::FixedTimestep, log::LogPlugin, prelude::*};
-use bevy_streamdeck::{StreamDeck, StreamDeckPlugin};
+use bevy::{log::LogPlugin, prelude::*, time::FixedTimestep};
+use bevy_streamdeck::{Color, StreamDeck, StreamDeckPlugin};
 use rand::Rng;
 
 fn main() {

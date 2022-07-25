@@ -1,14 +1,19 @@
 use std::time::Duration;
 
-use bevy_app::{App, AppExit, CoreStage, EventReader, EventWriter, Plugin, StartupStage};
-use bevy_ecs::system::{Commands, Res, ResMut};
-use bevy_input::Input;
-use bevy_log::debug;
 #[cfg(feature = "color_compatibility")]
-pub use bevy_render::prelude::Color;
+pub use bevy::render::prelude::Color;
 #[cfg(feature = "images")]
-use bevy_render::prelude::Image;
-use bevy_tasks::{IoTaskPool, Task};
+use bevy::render::prelude::Image;
+use bevy::{
+    app::{App, AppExit, CoreStage, Plugin, StartupStage},
+    ecs::{
+        event::{EventReader, EventWriter},
+        system::{Commands, Res, ResMut},
+    },
+    input::Input,
+    log::debug,
+    tasks::{IoTaskPool, Task},
+};
 use crossbeam_channel::{bounded, Receiver, Sender};
 #[cfg(feature = "images")]
 use image::{imageops::FilterType, DynamicImage, ImageBuffer, Pixel, Rgba};
@@ -224,7 +229,7 @@ impl StreamDeck {
         if let Some(kind) = self.kind {
             // Convert the texture to an image
             let mut dynamic_image = match image.texture_descriptor.format {
-                bevy_render::render_resource::TextureFormat::Rgba8UnormSrgb => {
+                bevy::render::render_resource::TextureFormat::Rgba8UnormSrgb => {
                     ImageBuffer::from_raw(
                         image.texture_descriptor.size.width,
                         image.texture_descriptor.size.height,

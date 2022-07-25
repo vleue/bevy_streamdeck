@@ -1,16 +1,12 @@
 use std::iter;
 
-// This example use direct dependencies to avoid adding some parts of Bevy like bevy_assets
-use bevy_app::{App, AppExit, CoreStage, EventWriter, ScheduleRunnerPlugin};
-use bevy_core::{CorePlugin, FixedTimestep, Time, Timer};
-use bevy_ecs::{
-    entity::Entity,
-    prelude::Component,
-    schedule::SystemSet,
-    system::{Commands, Query, Res, ResMut},
+use bevy::{
+    app::{AppExit, ScheduleRunnerPlugin},
+    core::CorePlugin,
+    log::LogPlugin,
+    prelude::*,
+    time::FixedTimestep,
 };
-use bevy_input::Input;
-use bevy_log::{info, LogPlugin};
 use bevy_streamdeck::{Color, StreamDeck, StreamDeckKey, StreamDeckPlugin};
 use rand::Rng;
 
