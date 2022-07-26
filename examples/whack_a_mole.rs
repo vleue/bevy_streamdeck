@@ -1,12 +1,6 @@
 use std::iter;
 
-use bevy::{
-    app::{AppExit, ScheduleRunnerPlugin},
-    core::CorePlugin,
-    log::LogPlugin,
-    prelude::*,
-    time::FixedTimestep,
-};
+use bevy::{app::AppExit, log::LogPlugin, prelude::*, time::FixedTimestep};
 use bevy_streamdeck::{Color, StreamDeck, StreamDeckKey, StreamDeckPlugin};
 use rand::Rng;
 
@@ -15,8 +9,7 @@ const FACTOR: f32 = 1.0;
 
 fn main() {
     App::new()
-        .add_plugin(CorePlugin)
-        .add_plugin(ScheduleRunnerPlugin)
+        .add_plugins(MinimalPlugins)
         .add_plugin(LogPlugin)
         .add_plugin(StreamDeckPlugin)
         .add_startup_system(clean)
