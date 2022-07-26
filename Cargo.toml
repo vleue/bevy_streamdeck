@@ -12,9 +12,9 @@ license = "MIT OR Apache-2.0"
 readme = "README.md"
 
 [features]
-default = [ "color_compatibility", "image_compatibility" ]
+default = [ "color_compatibility", "image_compatibility", "assets" ]
 color_compatibility = [ "bevy/bevy_render" ]
-image_compatibility = [ "bevy/bevy_render", "images" ]
+image_compatibility = [ "bevy/bevy_render", "bevy/png", "images" ]
 images = [ "image" ]
 assets = [ "bevy/bevy_asset" ]
 
@@ -29,12 +29,9 @@ rand = "0.8"
 
 [[example]]
 name = "image"
-required-features = ["assets"]
 
 [[example]]
 name = "animated"
-required-features = ["assets"]
 
 [[example]]
 name = "demo"
-required-features = ["assets"]
