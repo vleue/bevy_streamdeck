@@ -82,10 +82,11 @@ enum StreamDeckOrder {
     Exit,
 }
 
-fn listener(taskpool: Res<IoTaskPool>, mut commands: Commands) {
+fn listener(mut commands: Commands) {
     let (event_tx, event_rx) = bounded::<StreamDeckEvent>(10);
     let (order_tx, order_rx) = bounded::<StreamDeckOrder>(100);
 
+    let taskpool = IoTaskPool::get();
     let task = taskpool.spawn(async move {
         let mut streamdeck: Option<streamdeck::StreamDeck> = None;
         loop {
