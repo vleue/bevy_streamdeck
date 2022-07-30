@@ -18,11 +18,15 @@ image_compatibility = [ "bevy/bevy_render", "bevy/png", "images" ]
 images = [ "image" ]
 assets = [ "bevy/bevy_asset" ]
 
+[dependencies.bevy]
+version = "0.8.0"
+# git = "https://github.com/bevyengine/bevy"
+default-features = false
+
 [dependencies]
-bevy = { version = "0.8.0-dev", git = "https://github.com/bevyengine/bevy", default-features = false }
-streamdeck = { version = "0.6", default-features = false }
+streamdeck = { version = "0.7", default-features = false }
 crossbeam-channel = "0.5"
-image = { version = "0.23", optional = true }
+image = { version = "0.24", optional = true }
 
 [dev-dependencies]
 rand = "0.8"
