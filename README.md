@@ -9,7 +9,7 @@
 
 [Elgato Stream Deck](https://www.elgato.com/en/stream-deck) plugin for [Bevy](https://bevyengine.org).
 
-![capture of a Stream Deck](https://github.com/vleue/bevy_streamdeck/blob/main/capture.png)
+![capture of a Stream Deck](https://raw.githubusercontent.com/vleue/bevy_streamdeck/main/capture.png)
 
 Add the plugin:
 
