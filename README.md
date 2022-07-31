@@ -7,8 +7,9 @@
 [![CI](https://github.com/vleue/bevy_streamdeck/actions/workflows/ci.yml/badge.svg)](https://github.com/vleue/bevy_streamdeck/actions/workflows/ci.yml)
 
 
-[Elgato Stream Deck](https://www.elgato.com/en/stream-deck) plugin for Bevy.
+[Elgato Stream Deck](https://www.elgato.com/en/stream-deck) plugin for [Bevy](https://bevyengine.org).
 
+![capture of a Stream Deck](https://github.com/vleue/bevy_streamdeck/blob/main/capture.png)
 
 Add the plugin:
 
