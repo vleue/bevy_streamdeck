@@ -8,8 +8,8 @@ fn main() {
     App::new()
         .add_plugins(MinimalPlugins)
         .add_plugin(AssetPlugin::default())
-        .add_plugin(ImagePlugin)
-        .add_plugin(LogPlugin)
+        .add_plugin(ImagePlugin::default())
+        .add_plugin(LogPlugin::default())
         .add_plugin(StreamDeckPlugin)
         .add_startup_system(load_asset)
         .add_system_set(
@@ -20,6 +20,7 @@ fn main() {
         .run();
 }
 
+#[derive(Resource)]
 struct Animated([Handle<Image>; 11], usize);
 
 fn load_asset(mut commands: Commands, asset_server: Res<AssetServer>) {

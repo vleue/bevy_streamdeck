@@ -4,7 +4,7 @@ use bevy_streamdeck::{StreamDeckInput, StreamDeckKey, StreamDeckPlugin};
 fn main() {
     App::new()
         .add_plugins(MinimalPlugins)
-        .add_plugin(LogPlugin)
+        .add_plugin(LogPlugin::default())
         .add_plugin(StreamDeckPlugin)
         .add_system(print_streamdeck_events)
         .add_system(check_streamdeck_key_status)

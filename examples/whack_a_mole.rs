@@ -10,7 +10,7 @@ const FACTOR: f32 = 1.0;
 fn main() {
     App::new()
         .add_plugins(MinimalPlugins)
-        .add_plugin(LogPlugin)
+        .add_plugin(LogPlugin::default())
         .add_plugin(StreamDeckPlugin)
         .add_startup_system(clean)
         .add_system_set(
@@ -45,44 +45,44 @@ fn spawn_mole(
 
         let max_duration = 180.0;
         if rng.gen_bool(
-            (1.0 - (max_duration - time.seconds_since_startup()) / max_duration).clamp(0.2, 0.5),
+            (1.0 - (max_duration - time.elapsed_seconds_f64()) / max_duration).clamp(0.2, 0.5),
         ) {
             if rng.gen_bool(0.33) {
                 streamdeck.set_key_color(key, Color::rgb(1.0, 0.0, 0.0));
-                commands.spawn_bundle((Mole {
+                commands.spawn((Mole {
                     key,
                     ty: MoleType::ExtraBad,
-                    timer: Timer::from_seconds(rng.gen_range(0.9..1.3) * FACTOR, false),
+                    timer: Timer::from_seconds(rng.gen_range(0.9..1.3) * FACTOR, TimerMode::Once),
                 },));
             } else {
                 streamdeck.set_key_color(key, Color::rgb(1.0, 0.25, 0.0));
-                commands.spawn_bundle((Mole {
+                commands.spawn((Mole {
                     key,
                     ty: MoleType::Bad,
-                    timer: Timer::from_seconds(rng.gen_range(0.9..1.3) * FACTOR, false),
+                    timer: Timer::from_seconds(rng.gen_range(0.9..1.3) * FACTOR, TimerMode::Once),
                 },));
             }
         } else {
             let reduction =
-                (1.0 - (max_duration - time.seconds_since_startup()) / max_duration) / 2.0;
+                (1.0 - (max_duration - time.elapsed_seconds_f64()) / max_duration) / 2.0;
             if rng.gen_bool(0.15) {
                 streamdeck.set_key_color(key, Color::rgb(0.0, 0.0, 1.0));
-                commands.spawn_bundle((Mole {
+                commands.spawn((Mole {
                     key,
                     ty: MoleType::Extra,
                     timer: Timer::from_seconds(
                         (rng.gen_range(0.5..1.0) - reduction as f32).max(0.1) * FACTOR,
-                        false,
+                        TimerMode::Once,
                     ),
                 },));
             } else {
                 streamdeck.set_key_color(key, Color::rgb(0.0, 1.0, 0.0));
-                commands.spawn_bundle((Mole {
+                commands.spawn((Mole {
                     key,
                     ty: MoleType::Good,
                     timer: Timer::from_seconds(
                         (rng.gen_range(0.7..1.2) - reduction as f32).max(0.1) * FACTOR,
-                        false,
+                        TimerMode::Once,
                     ),
                 },));
             }
@@ -161,6 +161,7 @@ enum MoleType {
     Extra,
 }
 
+#[derive(Resource)]
 struct Player {
     lives: usize,
     score: usize,

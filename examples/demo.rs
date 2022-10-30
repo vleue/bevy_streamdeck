@@ -9,8 +9,8 @@ fn main() {
     App::new()
         .add_plugins(MinimalPlugins)
         .add_plugin(AssetPlugin::default())
-        .add_plugin(ImagePlugin)
-        .add_plugin(LogPlugin)
+        .add_plugin(ImagePlugin::default())
+        .add_plugin(LogPlugin::default())
         .add_plugin(StreamDeckPlugin)
         .add_startup_system(load_asset)
         .add_system_set(
@@ -40,18 +40,21 @@ fn change_color(
 ) {
     if let Some(_) = streamdeck.kind() {
         let color = Color::hsl(
-            (((time.seconds_since_startup() / 5.0).cos() + 1.0) / 2.0) as f32 * 360.0,
+            (((time.elapsed_seconds() / 5.0).cos() + 1.0) / 2.0) as f32 * 360.0,
             1.0,
             0.5,
         );
         streamdeck.set_key_color(1, color);
-        if (time.seconds_since_startup() / 5.0).cos() + 0.9995 < 0.0 {
+        if (time.elapsed_seconds() / 5.0).cos() + 0.9995 < 0.0 {
             app_exit_events.send(AppExit);
         }
     }
 }
 
+#[derive(Resource)]
 struct Animated([Handle<Image>; 11], usize);
+
+#[derive(Resource)]
 struct Logos(Handle<Image>, Handle<Image>, Handle<Image>);
 
 fn load_asset(mut commands: Commands, asset_server: Res<AssetServer>) {

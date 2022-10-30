@@ -12,6 +12,7 @@ use bevy::{
     },
     input::Input,
     log::debug,
+    prelude::Resource,
     tasks::{IoTaskPool, Task},
 };
 use crossbeam_channel::{bounded, Receiver, Sender};
@@ -200,12 +201,14 @@ fn receiver(
     }
 }
 
+#[derive(Resource)]
 struct StreamDeckInternal {
     #[allow(dead_code)]
     task: Task<()>,
     events: Receiver<StreamDeckEvent>,
 }
 
+#[derive(Resource)]
 pub struct StreamDeck {
     orders: Sender<StreamDeckOrder>,
     kind: Option<Kind>,
