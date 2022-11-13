@@ -19,7 +19,7 @@ images = [ "image" ]
 assets = [ "bevy/bevy_asset" ]
 
 [dependencies.bevy]
-version = "0.9.0-dev"
+version = "0.9"
 git = "https://github.com/bevyengine/bevy"
 default-features = false
 

@@ -49,42 +49,42 @@ fn spawn_mole(
         ) {
             if rng.gen_bool(0.33) {
                 streamdeck.set_key_color(key, Color::rgb(1.0, 0.0, 0.0));
-                commands.spawn((Mole {
+                commands.spawn(Mole {
                     key,
                     ty: MoleType::ExtraBad,
                     timer: Timer::from_seconds(rng.gen_range(0.9..1.3) * FACTOR, TimerMode::Once),
-                },));
+                });
             } else {
                 streamdeck.set_key_color(key, Color::rgb(1.0, 0.25, 0.0));
-                commands.spawn((Mole {
+                commands.spawn(Mole {
                     key,
                     ty: MoleType::Bad,
                     timer: Timer::from_seconds(rng.gen_range(0.9..1.3) * FACTOR, TimerMode::Once),
-                },));
+                });
             }
         } else {
             let reduction =
                 (1.0 - (max_duration - time.elapsed_seconds_f64()) / max_duration) / 2.0;
             if rng.gen_bool(0.15) {
                 streamdeck.set_key_color(key, Color::rgb(0.0, 0.0, 1.0));
-                commands.spawn((Mole {
+                commands.spawn(Mole {
                     key,
                     ty: MoleType::Extra,
                     timer: Timer::from_seconds(
                         (rng.gen_range(0.5..1.0) - reduction as f32).max(0.1) * FACTOR,
                         TimerMode::Once,
                     ),
-                },));
+                });
             } else {
                 streamdeck.set_key_color(key, Color::rgb(0.0, 1.0, 0.0));
-                commands.spawn((Mole {
+                commands.spawn(Mole {
                     key,
                     ty: MoleType::Good,
                     timer: Timer::from_seconds(
                         (rng.gen_range(0.7..1.2) - reduction as f32).max(0.1) * FACTOR,
                         TimerMode::Once,
                     ),
-                },));
+                });
             }
         }
     }
