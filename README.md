@@ -62,4 +62,5 @@ see https://github.com/ryankurte/rust-streamdeck#getting-started
 
 |Bevy|bevy_streamdeck|
 |---|---|
+|0.9|0.2|
 |0.8|0.1|
