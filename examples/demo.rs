@@ -1,6 +1,8 @@
+use std::time::Duration;
+
 use bevy::{
     app::AppExit, asset::AssetPlugin, log::LogPlugin, prelude::*, render::texture::ImagePlugin,
-    time::FixedTimestep,
+    time::common_conditions::on_timer,
 };
 use bevy_streamdeck::{ImageMode, StreamDeck, StreamDeckPlugin};
 use rand::Rng;
@@ -8,28 +10,26 @@ use rand::Rng;
 fn main() {
     App::new()
         .add_plugins(MinimalPlugins)
-        .add_plugin(AssetPlugin::default())
-        .add_plugin(ImagePlugin::default())
-        .add_plugin(LogPlugin::default())
-        .add_plugin(StreamDeckPlugin)
-        .add_startup_system(load_asset)
-        .add_system_set(
-            SystemSet::new()
-                .with_run_criteria(FixedTimestep::step(0.075))
-                .with_system(animated),
+        .add_plugins((
+            AssetPlugin::default(),
+            ImagePlugin::default(),
+            LogPlugin::default(),
+        ))
+        .add_plugins(StreamDeckPlugin)
+        .add_systems(Startup, load_asset)
+        .add_systems(
+            Update,
+            animated.run_if(on_timer(Duration::from_secs_f32(0.075))),
         )
-        .add_system_set(
-            SystemSet::new()
-                .with_run_criteria(FixedTimestep::step(0.1))
-                .with_system(change_color),
+        .add_systems(
+            Update,
+            change_color.run_if(on_timer(Duration::from_secs_f32(0.1))),
         )
-        .add_system_set(
-            SystemSet::new()
-                .with_run_criteria(FixedTimestep::step(1.0))
-                .with_system(invert_image)
-                .with_system(background_image),
+        .add_systems(
+            Update,
+            (invert_image, background_image).run_if(on_timer(Duration::from_secs_f32(1.0))),
         )
-        .add_system(setup)
+        .add_systems(Update, setup)
         .run();
 }
 

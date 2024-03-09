@@ -1,6 +1,6 @@
 [package]
 name = "bevy_streamdeck"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2021"
 authors = ["François Mockers <mockersf@gmail.com>"]
 description = "Elgato Stream Deck plugin for Bevy"
@@ -12,19 +12,18 @@ license = "MIT OR Apache-2.0"
 readme = "README.md"
 
 [features]
-default = [ "color_compatibility", "image_compatibility", "assets" ]
-color_compatibility = [ "bevy/bevy_render" ]
-image_compatibility = [ "bevy/bevy_render", "bevy/png", "images" ]
-images = [ "image" ]
-assets = [ "bevy/bevy_asset" ]
+default = ["color_compatibility", "image_compatibility", "assets"]
+color_compatibility = ["bevy/bevy_render"]
+image_compatibility = ["bevy/bevy_render", "bevy/png", "images"]
+images = ["image"]
+assets = ["bevy/bevy_asset"]
 
 [dependencies.bevy]
-version = "0.9"
-git = "https://github.com/bevyengine/bevy"
+version = "0.13"
 default-features = false
 
 [dependencies]
-streamdeck = { version = "0.7", default-features = false }
+streamdeck = { version = "0.8", default-features = false }
 crossbeam-channel = "0.5"
 image = { version = "0.24", optional = true }
 

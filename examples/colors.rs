@@ -1,17 +1,14 @@
-use bevy::{log::LogPlugin, prelude::*, time::FixedTimestep};
+use bevy::{log::LogPlugin, prelude::*};
 use bevy_streamdeck::{Color, StreamDeck, StreamDeckPlugin};
 use rand::Rng;
 
 fn main() {
     App::new()
         .add_plugins(MinimalPlugins)
-        .add_plugin(LogPlugin::default())
-        .add_plugin(StreamDeckPlugin)
-        .add_system_set(
-            SystemSet::new()
-                .with_run_criteria(FixedTimestep::step(0.5))
-                .with_system(change_color),
-        )
+        .add_plugins(LogPlugin::default())
+        .add_plugins(StreamDeckPlugin)
+        .insert_resource(Time::<Fixed>::from_seconds(0.5))
+        .add_systems(FixedUpdate, change_color)
         .run();
 }
 

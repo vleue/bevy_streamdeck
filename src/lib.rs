@@ -5,15 +5,15 @@ pub use bevy::render::prelude::Color;
 #[cfg(feature = "images")]
 use bevy::render::prelude::Image;
 use bevy::{
-    app::{App, AppExit, CoreStage, Plugin, StartupStage},
+    app::{App, AppExit, Plugin},
     ecs::{
         event::{EventReader, EventWriter},
         system::{Commands, Res, ResMut},
     },
-    input::Input,
+    input::ButtonInput,
     log::debug,
-    prelude::Resource,
-    tasks::{IoTaskPool, Task},
+    prelude::{Event, Last, PreStartup, PreUpdate, Resource},
+    tasks::IoTaskPool,
 };
 use crossbeam_channel::{bounded, Receiver, Sender};
 #[cfg(feature = "images")]
@@ -26,17 +26,17 @@ pub struct StreamDeckPlugin;
 impl Plugin for StreamDeckPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<StreamDeckInput>()
-            .init_resource::<Input<StreamDeckKey>>()
-            .add_startup_system_to_stage(StartupStage::PreStartup, listener)
-            .add_system_to_stage(CoreStage::PreUpdate, receiver)
-            .add_system_to_stage(CoreStage::Last, exit_on_exit);
+            .init_resource::<ButtonInput<StreamDeckKey>>()
+            .add_systems(PreStartup, listener)
+            .add_systems(PreUpdate, receiver)
+            .add_systems(Last, exit_on_exit);
     }
 }
 
 #[derive(Clone, Copy, Hash, PartialEq, Eq)]
 pub struct StreamDeckKey(pub u8);
 
-#[derive(Debug)]
+#[derive(Event, Debug)]
 pub enum StreamDeckInput {
     Press(u8),
     Release(u8),
@@ -157,10 +157,8 @@ fn listener(mut commands: Commands) {
             }
         }
     });
-    commands.insert_resource(StreamDeckInternal {
-        task,
-        events: event_rx,
-    });
+    task.detach();
+    commands.insert_resource(StreamDeckInternal { events: event_rx });
     commands.insert_resource(StreamDeck {
         orders: order_tx,
         kind: None,
@@ -170,7 +168,7 @@ fn listener(mut commands: Commands) {
 fn receiver(
     mut streamdeck: ResMut<StreamDeck>,
     internal: Res<StreamDeckInternal>,
-    mut inputs: ResMut<Input<StreamDeckKey>>,
+    mut inputs: ResMut<ButtonInput<StreamDeckKey>>,
     mut input_events: EventWriter<StreamDeckInput>,
 ) {
     inputs.clear();
@@ -178,22 +176,22 @@ fn receiver(
         match from_stream {
             StreamDeckEvent::LostConnection => {
                 streamdeck.kind = None;
-                input_events.send(StreamDeckInput::Disconnected)
+                input_events.send(StreamDeckInput::Disconnected);
             }
             StreamDeckEvent::Connected(kind) => {
                 streamdeck.kind = Some(kind);
-                input_events.send(StreamDeckInput::Connected(kind))
+                input_events.send(StreamDeckInput::Connected(kind));
             }
             StreamDeckEvent::KeyPressed(keys) => {
                 for (k, s) in keys.iter().enumerate() {
                     if *s == 1 && !inputs.pressed(StreamDeckKey(k as u8)) {
                         inputs.press(StreamDeckKey(k as u8));
-                        input_events.send(StreamDeckInput::Press(k as u8))
+                        input_events.send(StreamDeckInput::Press(k as u8));
                     }
 
                     if *s == 0 && inputs.pressed(StreamDeckKey(k as u8)) {
                         inputs.release(StreamDeckKey(k as u8));
-                        input_events.send(StreamDeckInput::Release(k as u8))
+                        input_events.send(StreamDeckInput::Release(k as u8));
                     }
                 }
             }
@@ -203,8 +201,6 @@ fn receiver(
 
 #[derive(Resource)]
 struct StreamDeckInternal {
-    #[allow(dead_code)]
-    task: Task<()>,
     events: Receiver<StreamDeckEvent>,
 }
 
@@ -295,7 +291,7 @@ impl StreamDeck {
 }
 
 fn exit_on_exit(streamdeck: Res<StreamDeck>, mut exit_events: EventReader<AppExit>) {
-    if exit_events.iter().next().is_some() {
+    if exit_events.read().next().is_some() {
         let _ = streamdeck.orders.send(StreamDeckOrder::Reset);
         let _ = streamdeck.orders.send(StreamDeckOrder::Exit);
     }

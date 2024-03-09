@@ -1,25 +1,21 @@
 use std::iter;
 
-use bevy::{app::AppExit, log::LogPlugin, prelude::*, time::FixedTimestep};
+use bevy::{app::AppExit, log::LogPlugin, prelude::*};
 use bevy_streamdeck::{Color, StreamDeck, StreamDeckKey, StreamDeckPlugin};
 use rand::Rng;
 
 // Lower to make it harder
-const FACTOR: f32 = 1.0;
+const FACTOR: f64 = 1.0;
 
 fn main() {
     App::new()
-        .add_plugins(MinimalPlugins)
-        .add_plugin(LogPlugin::default())
-        .add_plugin(StreamDeckPlugin)
-        .add_startup_system(clean)
-        .add_system_set(
-            SystemSet::new()
-                .with_run_criteria(FixedTimestep::step(0.35 * FACTOR as f64))
-                .with_system(spawn_mole),
-        )
-        .add_system_to_stage(CoreStage::PostUpdate, despawn_mole)
-        .add_system(whack)
+        .add_plugins((MinimalPlugins, LogPlugin::default()))
+        .add_plugins(StreamDeckPlugin)
+        .add_systems(Startup, clean)
+        .insert_resource(Time::<Fixed>::from_hz(60.0 / FACTOR))
+        .add_systems(FixedUpdate, spawn_mole)
+        .add_systems(PostUpdate, despawn_mole)
+        .add_systems(Update, whack)
         .insert_resource(Player { lives: 3, score: 0 })
         .run();
 }
@@ -52,14 +48,20 @@ fn spawn_mole(
                 commands.spawn(Mole {
                     key,
                     ty: MoleType::ExtraBad,
-                    timer: Timer::from_seconds(rng.gen_range(0.9..1.3) * FACTOR, TimerMode::Once),
+                    timer: Timer::from_seconds(
+                        rng.gen_range(0.9..1.3) * FACTOR as f32,
+                        TimerMode::Once,
+                    ),
                 });
             } else {
                 streamdeck.set_key_color(key, Color::rgb(1.0, 0.25, 0.0));
                 commands.spawn(Mole {
                     key,
                     ty: MoleType::Bad,
-                    timer: Timer::from_seconds(rng.gen_range(0.9..1.3) * FACTOR, TimerMode::Once),
+                    timer: Timer::from_seconds(
+                        rng.gen_range(0.9..1.3) * FACTOR as f32,
+                        TimerMode::Once,
+                    ),
                 });
             }
         } else {
@@ -71,7 +73,7 @@ fn spawn_mole(
                     key,
                     ty: MoleType::Extra,
                     timer: Timer::from_seconds(
-                        (rng.gen_range(0.5..1.0) - reduction as f32).max(0.1) * FACTOR,
+                        (rng.gen_range(0.5..1.0) - reduction as f32).max(0.1) * FACTOR as f32,
                         TimerMode::Once,
                     ),
                 });
@@ -81,7 +83,7 @@ fn spawn_mole(
                     key,
                     ty: MoleType::Good,
                     timer: Timer::from_seconds(
-                        (rng.gen_range(0.7..1.2) - reduction as f32).max(0.1) * FACTOR,
+                        (rng.gen_range(0.7..1.2) - reduction as f32).max(0.1) * FACTOR as f32,
                         TimerMode::Once,
                     ),
                 });
@@ -107,7 +109,7 @@ fn despawn_mole(
 fn whack(
     mut commands: Commands,
     moles: Query<(Entity, &Mole)>,
-    streamdeck_key: Res<Input<StreamDeckKey>>,
+    streamdeck_key: Res<ButtonInput<StreamDeckKey>>,
     streamdeck: Res<StreamDeck>,
     mut player: ResMut<Player>,
     mut app_exit_events: EventWriter<AppExit>,

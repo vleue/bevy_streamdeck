@@ -1,23 +1,19 @@
-use bevy::{
-    asset::AssetPlugin, log::LogPlugin, prelude::*, render::texture::ImagePlugin,
-    time::FixedTimestep,
-};
+use bevy::{asset::AssetPlugin, log::LogPlugin, prelude::*, render::texture::ImagePlugin};
 use bevy_streamdeck::{StreamDeck, StreamDeckPlugin};
 use rand::Rng;
 
 fn main() {
     App::new()
         .add_plugins(MinimalPlugins)
-        .add_plugin(AssetPlugin::default())
-        .add_plugin(ImagePlugin::default())
-        .add_plugin(LogPlugin::default())
-        .add_plugin(StreamDeckPlugin)
-        .add_startup_system(load_asset)
-        .add_system_set(
-            SystemSet::new()
-                .with_run_criteria(FixedTimestep::step(1.0))
-                .with_system(change_image),
-        )
+        .add_plugins((
+            AssetPlugin::default(),
+            ImagePlugin::default(),
+            LogPlugin::default(),
+        ))
+        .add_plugins(StreamDeckPlugin)
+        .insert_resource(Time::<Fixed>::from_seconds(1.0))
+        .add_systems(Startup, load_asset)
+        .add_systems(FixedUpdate, change_image)
         .run();
 }
 
