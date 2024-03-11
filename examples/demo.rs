@@ -9,8 +9,8 @@ use rand::Rng;
 
 fn main() {
     App::new()
-        .add_plugins(MinimalPlugins)
         .add_plugins((
+            MinimalPlugins,
             AssetPlugin::default(),
             ImagePlugin::default(),
             LogPlugin::default(),

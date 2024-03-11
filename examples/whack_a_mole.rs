@@ -12,7 +12,7 @@ fn main() {
         .add_plugins((MinimalPlugins, LogPlugin::default()))
         .add_plugins(StreamDeckPlugin)
         .add_systems(Startup, clean)
-        .insert_resource(Time::<Fixed>::from_hz(60.0 / FACTOR))
+        .insert_resource(Time::<Fixed>::from_hz(1.0 / FACTOR))
         .add_systems(FixedUpdate, spawn_mole)
         .add_systems(PostUpdate, despawn_mole)
         .add_systems(Update, whack)

@@ -4,8 +4,7 @@ use rand::Rng;
 
 fn main() {
     App::new()
-        .add_plugins(MinimalPlugins)
-        .add_plugins(LogPlugin::default())
+        .add_plugins((MinimalPlugins, LogPlugin::default()))
         .add_plugins(StreamDeckPlugin)
         .insert_resource(Time::<Fixed>::from_seconds(0.5))
         .add_systems(FixedUpdate, change_color)

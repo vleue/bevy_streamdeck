@@ -3,8 +3,7 @@ use bevy_streamdeck::{StreamDeckInput, StreamDeckKey, StreamDeckPlugin};
 
 fn main() {
     App::new()
-        .add_plugins(MinimalPlugins)
-        .add_plugins(LogPlugin::default())
+        .add_plugins((MinimalPlugins, LogPlugin::default()))
         .add_plugins(StreamDeckPlugin)
         .add_systems(
             Update,

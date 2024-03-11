@@ -21,6 +21,7 @@ assets = ["bevy/bevy_asset"]
 [dependencies.bevy]
 version = "0.13"
 default-features = false
+features = ["multi-threaded"]
 
 [dependencies]
 streamdeck = { version = "0.8", default-features = false }
