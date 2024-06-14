@@ -44,7 +44,7 @@ fn spawn_mole(
             (1.0 - (max_duration - time.elapsed_seconds_f64()) / max_duration).clamp(0.2, 0.5),
         ) {
             if rng.gen_bool(0.33) {
-                streamdeck.set_key_color(key, Color::rgb(1.0, 0.0, 0.0));
+                streamdeck.set_key_color(key, Color::linear_rgb(1.0, 0.0, 0.0));
                 commands.spawn(Mole {
                     key,
                     ty: MoleType::ExtraBad,
@@ -54,7 +54,7 @@ fn spawn_mole(
                     ),
                 });
             } else {
-                streamdeck.set_key_color(key, Color::rgb(1.0, 0.25, 0.0));
+                streamdeck.set_key_color(key, Color::linear_rgb(1.0, 0.25, 0.0));
                 commands.spawn(Mole {
                     key,
                     ty: MoleType::Bad,
@@ -68,7 +68,7 @@ fn spawn_mole(
             let reduction =
                 (1.0 - (max_duration - time.elapsed_seconds_f64()) / max_duration) / 2.0;
             if rng.gen_bool(0.15) {
-                streamdeck.set_key_color(key, Color::rgb(0.0, 0.0, 1.0));
+                streamdeck.set_key_color(key, Color::linear_rgb(0.0, 0.0, 1.0));
                 commands.spawn(Mole {
                     key,
                     ty: MoleType::Extra,
@@ -78,7 +78,7 @@ fn spawn_mole(
                     ),
                 });
             } else {
-                streamdeck.set_key_color(key, Color::rgb(0.0, 1.0, 0.0));
+                streamdeck.set_key_color(key, Color::linear_rgb(0.0, 1.0, 0.0));
                 commands.spawn(Mole {
                     key,
                     ty: MoleType::Good,
@@ -124,7 +124,7 @@ fn whack(
                     info!("Mega ouch!");
                     if player.lives == 0 {
                         info!("You lost!");
-                        app_exit_events.send(AppExit);
+                        app_exit_events.send(AppExit::error());
                     }
                 }
                 MoleType::Bad => {
@@ -132,7 +132,7 @@ fn whack(
                     info!("Ouch!");
                     if player.lives == 0 {
                         info!("You lost!");
-                        app_exit_events.send(AppExit);
+                        app_exit_events.send(AppExit::error());
                     }
                 }
                 MoleType::Good => {

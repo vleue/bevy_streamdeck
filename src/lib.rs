@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 #[cfg(feature = "color_compatibility")]
-pub use bevy::render::prelude::Color;
+pub use bevy::color::{Color, LinearRgba};
 #[cfg(feature = "images")]
 use bevy::render::prelude::Image;
 use bevy::{
@@ -110,7 +110,7 @@ fn listener(mut commands: Commands) {
                             StreamDeckOrder::Exit => return Ok(false),
                             StreamDeckOrder::Reset => streamdeck.reset(),
                             StreamDeckOrder::Color(k, color) => {
-                                let [r, g, b, _] = color.as_rgba_f32();
+                                let [r, g, b, _] = color.linear().to_f32_array();
                                 streamdeck.set_button_rgb(
                                     k + 1,
                                     &Colour {
@@ -257,18 +257,17 @@ impl StreamDeck {
 
             // Apply a background
             if let Some(background) = image_mode.background {
-                if let Color::Rgba {
+                let LinearRgba {
                     red, green, blue, ..
-                } = background.as_rgba()
-                {
-                    for pixel in dynamic_image.as_mut_rgba8().unwrap().pixels_mut() {
-                        pixel.blend(&Rgba([
-                            (red * 255.0) as u8,
-                            (green * 255.0) as u8,
-                            (blue * 255.0) as u8,
-                            255 - pixel.0[3],
-                        ]));
-                    }
+                } = background.linear();
+
+                for pixel in dynamic_image.as_mut_rgba8().unwrap().pixels_mut() {
+                    pixel.blend(&Rgba([
+                        (red * 255.0) as u8,
+                        (green * 255.0) as u8,
+                        (blue * 255.0) as u8,
+                        255 - pixel.0[3],
+                    ]));
                 }
             }
 

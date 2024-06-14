@@ -2,7 +2,7 @@
 name = "bevy_streamdeck"
 version = "0.3.0"
 edition = "2021"
-authors = ["François Mockers <mockersf@gmail.com>"]
+authors = ["François Mockers <francois.mockers@vleue.com>"]
 description = "Elgato Stream Deck plugin for Bevy"
 repository = "https://github.com/vleue/bevy_streamdeck"
 homepage = "https://github.com/vleue/bevy_streamdeck"
@@ -13,20 +13,20 @@ readme = "README.md"
 
 [features]
 default = ["color_compatibility", "image_compatibility", "assets"]
-color_compatibility = ["bevy/bevy_render"]
+color_compatibility = ["bevy/bevy_color"]
 image_compatibility = ["bevy/bevy_render", "bevy/png", "images"]
 images = ["image"]
 assets = ["bevy/bevy_asset"]
 
 [dependencies.bevy]
-version = "0.13"
+version = "0.14.0-rc.2"
 default-features = false
-features = ["multi-threaded"]
+features = ["multi_threaded"]
 
 [dependencies]
-streamdeck = { version = "0.8", default-features = false }
+streamdeck = { version = "0.9", default-features = false }
 crossbeam-channel = "0.5"
-image = { version = "0.24", optional = true }
+image = { version = "0.25", optional = true }
 
 [dev-dependencies]
 rand = "0.8"

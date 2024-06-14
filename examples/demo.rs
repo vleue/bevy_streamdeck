@@ -46,7 +46,7 @@ fn change_color(
         );
         streamdeck.set_key_color(1, color);
         if (time.elapsed_seconds() / 5.0).cos() + 0.9995 < 0.0 {
-            app_exit_events.send(AppExit);
+            app_exit_events.send(AppExit::Success);
         }
     }
 }
@@ -117,7 +117,7 @@ fn background_image(streamdeck: Res<StreamDeck>, logos: Res<Logos>, images: Res<
     if let Some(image) = images.get(&logos.2) {
         if let Some(_) = streamdeck.kind() {
             let mut rng = rand::thread_rng();
-            let color = Color::rgb(rng.gen(), rng.gen(), rng.gen());
+            let color = Color::linear_rgb(rng.gen(), rng.gen(), rng.gen());
 
             streamdeck.set_key_color(4, color);
 
