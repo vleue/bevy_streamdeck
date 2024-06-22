@@ -6,6 +6,7 @@ pub use bevy::color::{Color, LinearRgba};
 use bevy::render::prelude::Image;
 use bevy::{
     app::{App, AppExit, Plugin},
+    color::ColorToComponents,
     ecs::{
         event::{EventReader, EventWriter},
         system::{Commands, Res, ResMut},
@@ -110,7 +111,7 @@ fn listener(mut commands: Commands) {
                             StreamDeckOrder::Exit => return Ok(false),
                             StreamDeckOrder::Reset => streamdeck.reset(),
                             StreamDeckOrder::Color(k, color) => {
-                                let [r, g, b, _] = color.linear().to_f32_array();
+                                let [r, g, b, _] = color.to_linear().to_f32_array();
                                 streamdeck.set_button_rgb(
                                     k + 1,
                                     &Colour {
@@ -259,7 +260,7 @@ impl StreamDeck {
             if let Some(background) = image_mode.background {
                 let LinearRgba {
                     red, green, blue, ..
-                } = background.linear();
+                } = background.to_linear();
 
                 for pixel in dynamic_image.as_mut_rgba8().unwrap().pixels_mut() {
                     pixel.blend(&Rgba([
