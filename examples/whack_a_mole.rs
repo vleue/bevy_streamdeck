@@ -41,7 +41,7 @@ fn spawn_mole(
 
         let max_duration = 180.0;
         if rng.gen_bool(
-            (1.0 - (max_duration - time.elapsed_seconds_f64()) / max_duration).clamp(0.2, 0.5),
+            (1.0 - (max_duration - time.elapsed_secs_f64()) / max_duration).clamp(0.2, 0.5),
         ) {
             if rng.gen_bool(0.33) {
                 streamdeck.set_key_color(key, Color::linear_rgb(1.0, 0.0, 0.0));
@@ -65,8 +65,7 @@ fn spawn_mole(
                 });
             }
         } else {
-            let reduction =
-                (1.0 - (max_duration - time.elapsed_seconds_f64()) / max_duration) / 2.0;
+            let reduction = (1.0 - (max_duration - time.elapsed_secs_f64()) / max_duration) / 2.0;
             if rng.gen_bool(0.15) {
                 streamdeck.set_key_color(key, Color::linear_rgb(0.0, 0.0, 1.0));
                 commands.spawn(Mole {

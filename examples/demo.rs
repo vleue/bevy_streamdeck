@@ -40,12 +40,12 @@ fn change_color(
 ) {
     if let Some(_) = streamdeck.kind() {
         let color = Color::hsl(
-            (((time.elapsed_seconds() / 5.0).cos() + 1.0) / 2.0) as f32 * 360.0,
+            (((time.elapsed_secs() / 5.0).cos() + 1.0) / 2.0) as f32 * 360.0,
             1.0,
             0.5,
         );
         streamdeck.set_key_color(1, color);
-        if (time.elapsed_seconds() / 5.0).cos() + 0.9995 < 0.0 {
+        if (time.elapsed_secs() / 5.0).cos() + 0.9995 < 0.0 {
             app_exit_events.send(AppExit::Success);
         }
     }
