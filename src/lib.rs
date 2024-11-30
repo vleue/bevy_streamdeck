@@ -2,8 +2,8 @@ use std::time::Duration;
 
 #[cfg(feature = "color_compatibility")]
 pub use bevy::color::{Color, LinearRgba};
-#[cfg(feature = "images")]
-use bevy::render::prelude::Image;
+#[cfg(feature = "image_compatibility")]
+use bevy::image::Image;
 use bevy::{
     app::{App, AppExit, Plugin},
     color::ColorToComponents,
