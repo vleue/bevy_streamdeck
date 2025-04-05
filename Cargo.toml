@@ -45,6 +45,7 @@ glam = { version = "0.29" }
 
 [dev-dependencies]
 rand = "0.8"
+bevy = { version = "0.16.0-rc.3" }
 
 [[example]]
 name = "image"
