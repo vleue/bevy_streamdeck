@@ -1,24 +1,20 @@
 use std::time::Duration;
 
-#[cfg(feature = "color_compatibility")]
-pub use bevy::color::{Color, LinearRgba};
-#[cfg(feature = "image_compatibility")]
-use bevy::image::Image;
-use bevy::{
-    app::{App, AppExit, Plugin},
-    color::ColorToComponents,
-    ecs::{
-        event::{EventReader, EventWriter},
-        system::{Commands, Res, ResMut},
-    },
-    input::ButtonInput,
-    log::debug,
-    prelude::{Event, Last, PreStartup, PreUpdate, Resource},
-    tasks::IoTaskPool,
+use bevy_app::{App, AppExit, Last, Plugin, PreStartup, PreUpdate};
+pub use bevy_color::{Color, ColorToComponents, LinearRgba};
+use bevy_ecs::{
+    event::{Event, EventReader, EventWriter},
+    resource::Resource,
+    system::{Commands, Res, ResMut},
 };
+#[cfg(feature = "image_compatibility")]
+use bevy_image::Image;
+use bevy_input::ButtonInput;
+use bevy_tasks::IoTaskPool;
 use crossbeam_channel::{bounded, Receiver, Sender};
 #[cfg(feature = "images")]
 use image::{imageops::FilterType, DynamicImage, ImageBuffer, Pixel, Rgba};
+use log::debug;
 pub use streamdeck::Kind;
 use streamdeck::{Colour, Error};
 
@@ -50,30 +46,6 @@ enum StreamDeckEvent {
     LostConnection,
     Connected(streamdeck::Kind),
     KeyPressed(Vec<u8>),
-}
-
-#[cfg(not(feature = "color_compatibility"))]
-#[derive(Default)]
-pub struct Color {
-    pub r: f32,
-    pub g: f32,
-    pub b: f32,
-}
-#[cfg(not(feature = "color_compatibility"))]
-impl Color {
-    const BLACK: Color = Color {
-        r: 0.0,
-        g: 0.0,
-        b: 0.0,
-    };
-
-    pub const fn rgb(r: f32, g: f32, b: f32) -> Color {
-        Color { r, g, b }
-    }
-
-    fn as_rgba_f32(&self) -> [f32; 4] {
-        [self.r, self.g, self.b, 1.0]
-    }
 }
 
 enum StreamDeckOrder {
@@ -177,22 +149,22 @@ fn receiver(
         match from_stream {
             StreamDeckEvent::LostConnection => {
                 streamdeck.kind = None;
-                input_events.send(StreamDeckInput::Disconnected);
+                input_events.write(StreamDeckInput::Disconnected);
             }
             StreamDeckEvent::Connected(kind) => {
                 streamdeck.kind = Some(kind);
-                input_events.send(StreamDeckInput::Connected(kind));
+                input_events.write(StreamDeckInput::Connected(kind));
             }
             StreamDeckEvent::KeyPressed(keys) => {
                 for (k, s) in keys.iter().enumerate() {
                     if *s == 1 && !inputs.pressed(StreamDeckKey(k as u8)) {
                         inputs.press(StreamDeckKey(k as u8));
-                        input_events.send(StreamDeckInput::Press(k as u8));
+                        input_events.write(StreamDeckInput::Press(k as u8));
                     }
 
                     if *s == 0 && inputs.pressed(StreamDeckKey(k as u8)) {
                         inputs.release(StreamDeckKey(k as u8));
-                        input_events.send(StreamDeckInput::Release(k as u8));
+                        input_events.write(StreamDeckInput::Release(k as u8));
                     }
                 }
             }
@@ -230,11 +202,11 @@ impl StreamDeck {
         if let Some(kind) = self.kind {
             // Convert the texture to an image
             let mut dynamic_image = match image.texture_descriptor.format {
-                bevy::render::render_resource::TextureFormat::Rgba8UnormSrgb => {
+                bevy_render::render_resource::TextureFormat::Rgba8UnormSrgb => {
                     ImageBuffer::from_raw(
                         image.texture_descriptor.size.width,
                         image.texture_descriptor.size.height,
-                        image.data.clone(),
+                        image.data.as_ref().unwrap().clone(),
                     )
                     .map(DynamicImage::ImageRgba8)
                 }
@@ -258,7 +230,7 @@ impl StreamDeck {
 
             // Apply a background
             if let Some(background) = image_mode.background {
-                let LinearRgba {
+                let bevy_color::LinearRgba {
                     red, green, blue, ..
                 } = background.to_linear();
 
