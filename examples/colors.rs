@@ -16,7 +16,7 @@ fn change_color(streamdeck: Res<StreamDeck>) {
 
     if let Some(kind) = streamdeck.kind() {
         let key = rng.gen_range(0..kind.keys());
-        let color = Color::linear_rgb(rng.gen(), rng.gen(), rng.gen());
+        let color = Color::linear_rgb(rng.r#gen(), rng.r#gen(), rng.r#gen());
 
         streamdeck.set_key_color(key, color);
         for i in 0..kind.keys() {

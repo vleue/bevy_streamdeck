@@ -11,9 +11,9 @@ use bevy_ecs::{
 use bevy_image::Image;
 use bevy_input::ButtonInput;
 use bevy_tasks::IoTaskPool;
-use crossbeam_channel::{bounded, Receiver, Sender};
+use crossbeam_channel::{Receiver, Sender, bounded};
 #[cfg(feature = "images")]
-use image::{imageops::FilterType, DynamicImage, ImageBuffer, Pixel, Rgba};
+use image::{DynamicImage, ImageBuffer, Pixel, Rgba, imageops::FilterType};
 use log::debug;
 pub use streamdeck::Kind;
 use streamdeck::{Colour, Error};
