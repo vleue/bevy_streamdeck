@@ -117,7 +117,7 @@ fn background_image(streamdeck: Res<StreamDeck>, logos: Res<Logos>, images: Res<
     if let Some(image) = images.get(&logos.2) {
         if let Some(_) = streamdeck.kind() {
             let mut rng = rand::thread_rng();
-            let color = Color::linear_rgb(rng.gen(), rng.gen(), rng.gen());
+            let color = Color::linear_rgb(rng.r#gen(), rng.r#gen(), rng.r#gen());
 
             streamdeck.set_key_color(4, color);
 
