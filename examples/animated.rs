@@ -1,4 +1,4 @@
-use bevy::{asset::AssetPlugin, log::LogPlugin, prelude::*, render::texture::ImagePlugin};
+use bevy::{asset::AssetPlugin, log::LogPlugin, prelude::*};
 use bevy_streamdeck::{StreamDeck, StreamDeckPlugin};
 
 fn main() {

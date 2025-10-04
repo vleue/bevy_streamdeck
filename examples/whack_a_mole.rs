@@ -111,7 +111,7 @@ fn whack(
     streamdeck_key: Res<ButtonInput<StreamDeckKey>>,
     streamdeck: Res<StreamDeck>,
     mut player: ResMut<Player>,
-    mut app_exit_events: EventWriter<AppExit>,
+    mut app_exit: MessageWriter<AppExit>,
 ) {
     for (entity, mole) in moles.iter() {
         if streamdeck_key.just_pressed(StreamDeckKey(mole.key)) {
@@ -123,7 +123,7 @@ fn whack(
                     info!("Mega ouch!");
                     if player.lives == 0 {
                         info!("You lost!");
-                        app_exit_events.send(AppExit::error());
+                        app_exit.write(AppExit::error());
                     }
                 }
                 MoleType::Bad => {
@@ -131,7 +131,7 @@ fn whack(
                     info!("Ouch!");
                     if player.lives == 0 {
                         info!("You lost!");
-                        app_exit_events.send(AppExit::error());
+                        app_exit.write(AppExit::error());
                     }
                 }
                 MoleType::Good => {
