@@ -122,11 +122,11 @@ fn listener(mut commands: Commands) {
             if lost_connection {
                 streamdeck = None;
             }
-            if streamdeck.is_none() {
-                if let Ok(new_streamdeck) = streamdeck::StreamDeck::connect(0x0fd9, 0x0063, None) {
-                    let _ = event_tx.send(StreamDeckEvent::Connected(new_streamdeck.kind()));
-                    streamdeck = Some(new_streamdeck);
-                }
+            if streamdeck.is_none()
+                && let Ok(new_streamdeck) = streamdeck::StreamDeck::connect(0x0fd9, 0x0063, None)
+            {
+                let _ = event_tx.send(StreamDeckEvent::Connected(new_streamdeck.kind()));
+                streamdeck = Some(new_streamdeck);
             }
         }
     });
