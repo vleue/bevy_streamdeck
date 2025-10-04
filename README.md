@@ -21,6 +21,7 @@ app.add_plugin(StreamDeckPlugin);
 ### Handling Input Events
 
 Receive events from button presses (see [inputs example](https://github.com/vleue/bevy_streamdeck/blob/main/examples/inputs.rs)):
+
 ```rust
 fn print_streamdeck_events(mut streamdeck_input_events: EventReader<StreamDeckInput>) {
     for event in streamdeck_input_events.iter() {
@@ -32,6 +33,7 @@ fn print_streamdeck_events(mut streamdeck_input_events: EventReader<StreamDeckIn
 ### Setting Button Colors
 
 Set a button color (see [colors example](https://github.com/vleue/bevy_streamdeck/blob/main/examples/colors.rs)):
+
 ```rust
 fn set_color(streamdeck: Res<StreamDeck>) {
     streamdeck.set_key_color(1, Color::BLUE);
@@ -42,6 +44,7 @@ fn set_color(streamdeck: Res<StreamDeck>) {
 ### Displaying Images
 
 Display an image on a button (see [image example](https://github.com/vleue/bevy_streamdeck/blob/main/examples/image.rs)):
+
 ```rust
 fn set_image(streamdeck: Res<StreamDeck>, logo: Res<Logo>, images: Res<Assets<Image>>) {
     let handle: Handle<Image> = ...;
@@ -50,7 +53,6 @@ fn set_image(streamdeck: Res<StreamDeck>, logo: Res<Logo>, images: Res<Assets<Im
     }
 }
 ```
-
 
 ## Platform-Specific Setup
 
@@ -62,11 +64,12 @@ For Linux setup, please refer to the [rust-streamdeck getting started guide](htt
 
 ### Bevy Compatibility
 
-|Bevy|bevy_streamdeck|
-|---|---|
-|0.16|0.6|
-|0.15|0.5|
-|0.14|0.4|
-|0.13|0.3|
-|0.9|0.2|
-|0.8|0.1|
+| Bevy | bevy_streamdeck |
+| ---- | --------------- |
+| 0.17 | 0.7             |
+| 0.16 | 0.6             |
+| 0.15 | 0.5             |
+| 0.14 | 0.4             |
+| 0.13 | 0.3             |
+| 0.9  | 0.2             |
+| 0.8  | 0.1             |

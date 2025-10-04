@@ -1,6 +1,6 @@
 [package]
 name = "bevy_streamdeck"
-version = "0.6.0"
+version = "0.7.0"
 edition = "2024"
 authors = ["François Mockers <francois.mockers@vleue.com>"]
 description = "Elgato Stream Deck plugin for Bevy"
@@ -28,15 +28,15 @@ assets = ["dep:bevy_asset"]
 # features = ["multi_threaded"]
 
 [dependencies]
-bevy_ecs = { version = "0.16.0", default-features = false }
-bevy_app = { version = "0.16.0", default-features = false }
-bevy_input = { version = "0.16.0", default-features = false }
-bevy_tasks = { version = "0.16.0", default-features = false }
-bevy_color = { version = "0.16.0", default-features = false }
-bevy_math = { version = "0.16.0" }
-bevy_render = { version = "0.16.0", default-features = false, optional = true }
-bevy_asset = { version = "0.16.0", default-features = false, optional = true }
-bevy_image = { version = "0.16.0", default-features = false, optional = true }
+bevy_ecs = { version = "0.17", default-features = false }
+bevy_app = { version = "0.17", default-features = false }
+bevy_input = { version = "0.17", default-features = false }
+bevy_tasks = { version = "0.17", default-features = false }
+bevy_color = { version = "0.17", default-features = false }
+bevy_math = { version = "0.17" }
+bevy_render = { version = "0.17", default-features = false, optional = true }
+bevy_asset = { version = "0.17", default-features = false, optional = true }
+bevy_image = { version = "0.17", default-features = false, optional = true }
 streamdeck = { version = "0.9", default-features = false }
 crossbeam-channel = "0.5"
 image = { version = "0.25", optional = true }
@@ -45,7 +45,7 @@ glam = { version = "0.29" }
 
 [dev-dependencies]
 rand = "0.8"
-bevy = { version = "0.16.0" }
+bevy = { version = "0.17" }
 
 [[example]]
 name = "image"

@@ -12,8 +12,8 @@ fn main() {
         .run();
 }
 
-fn print_streamdeck_events(mut streamdeck_input_events: EventReader<StreamDeckInput>) {
-    for event in streamdeck_input_events.read() {
+fn print_streamdeck_events(mut streamdeck_input: MessageReader<StreamDeckInput>) {
+    for event in streamdeck_input.read() {
         info!("{:?}", event);
     }
 }

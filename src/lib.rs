@@ -3,7 +3,7 @@ use std::time::Duration;
 use bevy_app::{App, AppExit, Last, Plugin, PreStartup, PreUpdate};
 pub use bevy_color::{Color, ColorToComponents, LinearRgba};
 use bevy_ecs::{
-    event::{Event, EventReader, EventWriter},
+    message::{Message, MessageReader, MessageWriter},
     resource::Resource,
     system::{Commands, Res, ResMut},
 };
@@ -22,7 +22,7 @@ pub struct StreamDeckPlugin;
 
 impl Plugin for StreamDeckPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<StreamDeckInput>()
+        app.add_message::<StreamDeckInput>()
             .init_resource::<ButtonInput<StreamDeckKey>>()
             .add_systems(PreStartup, listener)
             .add_systems(PreUpdate, receiver)
@@ -33,7 +33,7 @@ impl Plugin for StreamDeckPlugin {
 #[derive(Clone, Copy, Hash, PartialEq, Eq)]
 pub struct StreamDeckKey(pub u8);
 
-#[derive(Event, Debug)]
+#[derive(Message, Debug)]
 pub enum StreamDeckInput {
     Press(u8),
     Release(u8),
@@ -142,7 +142,7 @@ fn receiver(
     mut streamdeck: ResMut<StreamDeck>,
     internal: Res<StreamDeckInternal>,
     mut inputs: ResMut<ButtonInput<StreamDeckKey>>,
-    mut input_events: EventWriter<StreamDeckInput>,
+    mut input_events: MessageWriter<StreamDeckInput>,
 ) {
     inputs.clear();
     for from_stream in internal.events.try_iter() {
@@ -262,7 +262,7 @@ impl StreamDeck {
     }
 }
 
-fn exit_on_exit(streamdeck: Res<StreamDeck>, mut exit_events: EventReader<AppExit>) {
+fn exit_on_exit(streamdeck: Res<StreamDeck>, mut exit_events: MessageReader<AppExit>) {
     if exit_events.read().next().is_some() {
         let _ = streamdeck.orders.send(StreamDeckOrder::Reset);
         let _ = streamdeck.orders.send(StreamDeckOrder::Exit);

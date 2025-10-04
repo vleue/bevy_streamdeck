@@ -1,8 +1,7 @@
 use std::time::Duration;
 
 use bevy::{
-    app::AppExit, asset::AssetPlugin, log::LogPlugin, prelude::*, render::texture::ImagePlugin,
-    time::common_conditions::on_timer,
+    app::AppExit, asset::AssetPlugin, log::LogPlugin, prelude::*, time::common_conditions::on_timer,
 };
 use bevy_streamdeck::{ImageMode, StreamDeck, StreamDeckPlugin};
 use rand::Rng;
@@ -36,7 +35,7 @@ fn main() {
 fn change_color(
     streamdeck: Res<StreamDeck>,
     time: Res<Time>,
-    mut app_exit_events: EventWriter<AppExit>,
+    mut app_exit: MessageWriter<AppExit>,
 ) {
     if let Some(_) = streamdeck.kind() {
         let color = Color::hsl(
@@ -46,7 +45,7 @@ fn change_color(
         );
         streamdeck.set_key_color(1, color);
         if (time.elapsed_secs() / 5.0).cos() + 0.9995 < 0.0 {
-            app_exit_events.send(AppExit::Success);
+            app_exit.write(AppExit::Success);
         }
     }
 }
