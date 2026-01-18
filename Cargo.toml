@@ -1,6 +1,6 @@
 [package]
 name = "bevy_streamdeck"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2024"
 authors = ["François Mockers <francois.mockers@vleue.com>"]
 description = "Elgato Stream Deck plugin for Bevy"
