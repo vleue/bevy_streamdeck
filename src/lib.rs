@@ -270,8 +270,10 @@ fn exit_on_exit(streamdeck: Res<StreamDeck>, mut exit_events: MessageReader<AppE
 }
 
 #[cfg(feature = "images")]
+#[derive(Default)]
 pub enum ImageResize {
     /// Does not preserve aspect ratio.
+    #[default]
     Exact,
     /// The image's aspect ratio is preserved.
     Aspect,
@@ -280,13 +282,6 @@ pub enum ImageResize {
     /// larger (relative to aspect ratio) of the bounds, then cropped to fit
     /// within the other bound.
     AspectFill,
-}
-
-#[cfg(feature = "images")]
-impl Default for ImageResize {
-    fn default() -> Self {
-        Self::Exact
-    }
 }
 
 #[cfg(feature = "images")]
