@@ -32,7 +32,7 @@ bevy_math = { version = "0.18" }
 bevy_render = { version = "0.18", default-features = false, optional = true }
 bevy_asset = { version = "0.18", default-features = false, optional = true }
 bevy_image = { version = "0.18", default-features = false, optional = true }
-streamdeck = { version = "0.9", default-features = false }
+streamdeck = { version = "0.10", default-features = false }
 crossbeam-channel = "0.5"
 image = { version = "0.25", optional = true }
 log = "0.4"
