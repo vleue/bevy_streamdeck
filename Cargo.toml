@@ -38,7 +38,7 @@ image = { version = "0.25", optional = true }
 log = "0.4"
 
 [dev-dependencies]
-rand = "0.9"
+rand = "0.10"
 bevy = { version = "0.18" }
 
 [[example]]
