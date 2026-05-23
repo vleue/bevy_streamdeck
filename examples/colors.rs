@@ -1,6 +1,6 @@
 use bevy::{log::LogPlugin, prelude::*};
 use bevy_streamdeck::{Color, StreamDeck, StreamDeckPlugin};
-use rand::Rng;
+use rand::RngExt;
 
 fn main() {
     App::new()
@@ -12,11 +12,11 @@ fn main() {
 }
 
 fn change_color(streamdeck: Res<StreamDeck>) {
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     if let Some(kind) = streamdeck.kind() {
-        let key = rng.gen_range(0..kind.keys());
-        let color = Color::linear_rgb(rng.r#gen(), rng.r#gen(), rng.r#gen());
+        let key = rng.random_range(0..kind.keys());
+        let color = Color::linear_rgb(rng.random(), rng.random(), rng.random());
 
         streamdeck.set_key_color(key, color);
         for i in 0..kind.keys() {

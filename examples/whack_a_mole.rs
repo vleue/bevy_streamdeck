@@ -2,7 +2,7 @@ use std::iter;
 
 use bevy::{app::AppExit, log::LogPlugin, prelude::*};
 use bevy_streamdeck::{Color, StreamDeck, StreamDeckKey, StreamDeckPlugin};
-use rand::Rng;
+use rand::RngExt;
 
 // Lower to make it harder
 const FACTOR: f64 = 1.0;
@@ -30,26 +30,26 @@ fn spawn_mole(
     time: Res<Time>,
     moles: Query<&Mole>,
 ) {
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     if let Some(kind) = streamdeck.kind() {
         let current = moles.iter().map(|m| m.key).collect::<Vec<_>>();
         let key = iter::repeat(())
-            .map(|_| rng.gen_range(0..kind.keys()))
+            .map(|_| rng.random_range(0..kind.keys()))
             .find(|k| !current.contains(k))
             .unwrap();
 
         let max_duration = 180.0;
-        if rng.gen_bool(
+        if rng.random_bool(
             (1.0 - (max_duration - time.elapsed_secs_f64()) / max_duration).clamp(0.2, 0.5),
         ) {
-            if rng.gen_bool(0.33) {
+            if rng.random_bool(0.33) {
                 streamdeck.set_key_color(key, Color::linear_rgb(1.0, 0.0, 0.0));
                 commands.spawn(Mole {
                     key,
                     ty: MoleType::ExtraBad,
                     timer: Timer::from_seconds(
-                        rng.gen_range(0.9..1.3) * FACTOR as f32,
+                        rng.random_range(0.9..1.3) * FACTOR as f32,
                         TimerMode::Once,
                     ),
                 });
@@ -59,20 +59,20 @@ fn spawn_mole(
                     key,
                     ty: MoleType::Bad,
                     timer: Timer::from_seconds(
-                        rng.gen_range(0.9..1.3) * FACTOR as f32,
+                        rng.random_range(0.9..1.3) * FACTOR as f32,
                         TimerMode::Once,
                     ),
                 });
             }
         } else {
             let reduction = (1.0 - (max_duration - time.elapsed_secs_f64()) / max_duration) / 2.0;
-            if rng.gen_bool(0.15) {
+            if rng.random_bool(0.15) {
                 streamdeck.set_key_color(key, Color::linear_rgb(0.0, 0.0, 1.0));
                 commands.spawn(Mole {
                     key,
                     ty: MoleType::Extra,
                     timer: Timer::from_seconds(
-                        (rng.gen_range(0.5..1.0) - reduction as f32).max(0.1) * FACTOR as f32,
+                        (rng.random_range(0.5..1.0) - reduction as f32).max(0.1) * FACTOR as f32,
                         TimerMode::Once,
                     ),
                 });
@@ -82,7 +82,7 @@ fn spawn_mole(
                     key,
                     ty: MoleType::Good,
                     timer: Timer::from_seconds(
-                        (rng.gen_range(0.7..1.2) - reduction as f32).max(0.1) * FACTOR as f32,
+                        (rng.random_range(0.7..1.2) - reduction as f32).max(0.1) * FACTOR as f32,
                         TimerMode::Once,
                     ),
                 });
