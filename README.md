@@ -66,6 +66,7 @@ For Linux setup, please refer to the [rust-streamdeck getting started guide](htt
 
 | Bevy | bevy_streamdeck |
 | ---- | --------------- |
+| 0.19 | 0.9             |
 | 0.18 | 0.8             |
 | 0.17 | 0.7             |
 | 0.16 | 0.6             |
