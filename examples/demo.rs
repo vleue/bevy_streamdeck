@@ -4,7 +4,7 @@ use bevy::{
     app::AppExit, asset::AssetPlugin, log::LogPlugin, prelude::*, time::common_conditions::on_timer,
 };
 use bevy_streamdeck::{ImageMode, StreamDeck, StreamDeckPlugin};
-use rand::Rng;
+use rand::RngExt;
 
 fn main() {
     App::new()
@@ -115,8 +115,8 @@ fn invert_image(
 fn background_image(streamdeck: Res<StreamDeck>, logos: Res<Logos>, images: Res<Assets<Image>>) {
     if let Some(image) = images.get(&logos.2) {
         if let Some(_) = streamdeck.kind() {
-            let mut rng = rand::thread_rng();
-            let color = Color::linear_rgb(rng.r#gen(), rng.r#gen(), rng.r#gen());
+            let mut rng = rand::rng();
+            let color = Color::linear_rgb(rng.random(), rng.random(), rng.random());
 
             streamdeck.set_key_color(4, color);
 

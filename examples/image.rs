@@ -1,6 +1,6 @@
 use bevy::{asset::AssetPlugin, log::LogPlugin, prelude::*};
 use bevy_streamdeck::{StreamDeck, StreamDeckPlugin};
-use rand::Rng;
+use rand::RngExt;
 
 fn main() {
     App::new()
@@ -26,10 +26,10 @@ fn load_asset(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 fn change_image(streamdeck: Res<StreamDeck>, logo: Res<Logo>, images: Res<Assets<Image>>) {
     if let Some(image) = images.get(&logo.0) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         if let Some(kind) = streamdeck.kind() {
-            let key = rng.gen_range(0..kind.keys());
+            let key = rng.random_range(0..kind.keys());
 
             streamdeck.set_key_image(key, &image);
             for i in 0..kind.keys() {
