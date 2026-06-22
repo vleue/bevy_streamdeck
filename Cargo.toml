@@ -39,7 +39,7 @@ log = "0.4"
 
 [dev-dependencies]
 rand = "0.10"
-bevy = { version = "0.18" }
+bevy = { version = "0.19" }
 
 [[example]]
 name = "image"
