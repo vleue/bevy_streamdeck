@@ -28,7 +28,7 @@ bevy_app = { version = "0.18", default-features = false }
 bevy_input = { version = "0.18", default-features = false }
 bevy_tasks = { version = "0.18", default-features = false }
 bevy_color = { version = "0.18", default-features = false }
-bevy_math = { version = "0.18" }
+bevy_math = { version = "0.19" }
 bevy_render = { version = "0.18", default-features = false, optional = true }
 bevy_asset = { version = "0.18", default-features = false, optional = true }
 bevy_image = { version = "0.18", default-features = false, optional = true }
