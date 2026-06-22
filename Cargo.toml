@@ -23,7 +23,7 @@ images = ["dep:image"]
 assets = ["dep:bevy_asset"]
 
 [dependencies]
-bevy_ecs = { version = "0.18", default-features = false }
+bevy_ecs = { version = "0.19", default-features = false }
 bevy_app = { version = "0.18", default-features = false }
 bevy_input = { version = "0.18", default-features = false }
 bevy_tasks = { version = "0.18", default-features = false }
