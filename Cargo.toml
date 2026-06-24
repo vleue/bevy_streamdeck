@@ -23,15 +23,15 @@ images = ["dep:image"]
 assets = ["dep:bevy_asset"]
 
 [dependencies]
-bevy_ecs = { version = "0.19.0-rc.2", default-features = false }
-bevy_app = { version = "0.19.0-rc.2", default-features = false }
-bevy_input = { version = "0.19.0-rc.2", default-features = false }
-bevy_tasks = { version = "0.19.0-rc.2", default-features = false }
-bevy_color = { version = "0.19.0-rc.2", default-features = false }
-bevy_math = { version = "0.19.0-rc.2" }
-bevy_render = { version = "0.19.0-rc.2", default-features = false, optional = true }
-bevy_asset = { version = "0.19.0-rc.2", default-features = false, optional = true }
-bevy_image = { version = "0.19.0-rc.2", default-features = false, optional = true }
+bevy_ecs = { version = "0.19.0", default-features = false }
+bevy_app = { version = "0.19.0", default-features = false }
+bevy_input = { version = "0.19.0", default-features = false }
+bevy_tasks = { version = "0.19.0", default-features = false }
+bevy_color = { version = "0.19.0", default-features = false }
+bevy_math = { version = "0.19.0" }
+bevy_render = { version = "0.19.0", default-features = false, optional = true }
+bevy_asset = { version = "0.19.0", default-features = false, optional = true }
+bevy_image = { version = "0.19.0", default-features = false, optional = true }
 streamdeck = { version = "0.10", default-features = false }
 crossbeam-channel = "0.5"
 image = { version = "0.25", optional = true }
@@ -39,7 +39,7 @@ log = "0.4"
 
 [dev-dependencies]
 rand = "0.10"
-bevy = { version = "0.19.0-rc.2" }
+bevy = { version = "0.19.0" }
 
 [[example]]
 name = "image"
